@@ -13,10 +13,10 @@
     <!-- TODO: Add the responsive 'viewport' meta tag.
          The 'name' should be 'viewport' and the 'content' should set the 'width' to 'device-width'
          and the 'initial-scale' to '1.0'. -->
-         <meta name="viewport" content="width=device-width" initial-scale="1.0">
+         <meta name="viewport" content="width=device-width ,initial-scale= 1.0">
 
     <!-- TODO: Add a title, e.g., "Manage Resources". -->
-    <title>Manager Resources</title>
+    <title>Manage Resources</title>
     <!-- TODO: Link to your CSS framework or stylesheet. -->
      <link rel="stylesheet" href="styleSheet" href= "">
 </head>
@@ -40,9 +40,9 @@
                     <!-- TODO: Add a 'label' and 'input' for the resource title.
                          - label 'for': "resource-title"
                          - input 'id': "resource-title", type="text", required -->
-                    <p><label for="resource-title">Resource Title</label>
+                    <p><label for="resource-title" >Resource Title</label>
                     <br>
-                    <input type="text" id="resource-title"></p>
+                    <input type="text" id="resource-title" required></p>
                     <!-- TODO: Add a 'label' and 'textarea' for the resource description.
                          - label 'for': "resource-description"
                          - textarea 'id': "resource-description" -->
@@ -55,7 +55,7 @@
                          - input 'id': "resource-link", type="url", required -->
                     <p><label for="resource-link">Resource Link</label>
                     <br>
-                    <input type="url" id="resource-link"></p>
+                    <input type="url" id="resource-link" required></p>
                     <!-- TODO: Add a 'button' to submit the form.
                          - id="add-resource", type="submit", Text: "Add Resource" -->
                     <button id="add-resource" type="submit">Add Resource</button>
@@ -77,9 +77,11 @@
                 <!-- TODO: Create a 'thead' and a 'tr' inside it. -->
                     <!-- TODO: Add 'th' elements for "Title", "Description", and "Actions". -->
                 <thead>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Actions</th>
+                    <tr>
+                         <th>Title</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
                 </thead>
                 <!-- TODO: Create a 'tbody' for the data. -->
                  <tbody>
