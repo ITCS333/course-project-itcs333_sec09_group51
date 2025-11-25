@@ -517,6 +517,10 @@ function sendResponse($data, $statusCode = 200) {
 function validateUrl($url) {
     // TODO: Use filter_var with FILTER_VALIDATE_URL
     // Return true if valid, false otherwise
+    if (filter_var($url , FILTER_VALIDATE_URL ))
+        return true ;
+    else 
+        return false ;
 }
 
 
