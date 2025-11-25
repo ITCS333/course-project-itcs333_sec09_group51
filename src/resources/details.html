@@ -8,57 +8,78 @@
 <html lang="en">
 <head>
     <!-- TODO: Add meta tags for charset and viewport. -->
-    
+    <meta charset="UTF-8" >
+    <meta name="viewport" content="width=device-width ,initial-scale= 1.0">
     <!-- TODO: Add a title. You can make it dynamic later, but for now, use "Resource Details". -->
-
+    <title>Resource Details</title>
     <!-- TODO: Link to your CSS framework or stylesheet. -->
+     <link rel="stylesheet" href="">
 </head>
 <body>
     <!-- TODO: Create a 'header' with a main heading ('h1'). You can use a dummy title like "Chapter 1 Notes". -->
-
+    <header><h1>Chapter 1 Notes</h1></header>
     <!-- TODO: Create the 'main' content area. -->
-
+    <main>
         <!-- Section 1: Resource Information -->
+         <section>
         <!-- TODO: Use an 'article' to display the main resource information. -->
+            <article>
             <!-- TODO: Add a paragraph ('p') for the resource description (use dummy text). -->
+                <p>This page is about the chapter 1 notes</p>
             <!-- TODO: Add an anchor tag ('a') that links to the actual resource URL (use a dummy link like "https://example.com").
                  - Text should be "Access Resource Material".
                  - Consider adding 'target="_blank"' to open it in a new tab. -->
+                <a href="https://example.com" target="_blank">Access Resource Material</a>
         <!-- End of article. -->
-
+            </article>
+        </section>
         <!-- Section 2: Discussion Forum -->
         <!-- TODO: Create a 'section' for the discussion, with an 'id' of "discussion-forum". -->
+        <section id="discussion-forum">
             <!-- TODO: Add a sub-heading ('h2') "Discussion". -->
-
+            <h2>Discussion</h2>
             <!-- Subsection 2.1: Existing Comments -->
             <!-- TODO: Add a container (like a 'div') for the list of comments. -->
                 <!-- TODO: Add 1-2 dummy comments to show the structure. -->
-
+            <div>
                 <!-- Example Comment 1: -->
                 <!-- TODO: Use an 'article' for each comment. -->
+                <article>
                     <!-- TODO: Use a 'p' for the comment text (e.g., "This was very helpful, thanks!"). -->
+                    <p>This was very helpful, thanks!</p>
                     <!-- TODO: Use a 'footer' to show the author (e.g., "Posted by: Jane Doe"). -->
+                     <footer>Posted by: Jane Doe</footer>
                 <!-- End of comment article. -->
-
+                </article>
                 <!-- Example Comment 2: -->
                 <!-- TODO: Create another 'article' for a second comment. -->
+                 <article>
+                    <p>This was very helpful!</p>
+                    <footer>Posted by: Jone Doe</footer>
+                </article>
             <!-- End of comment list container. -->
-
+            </div> <br>
             <!-- Subsection 2.2: Add a Comment Form -->
             <!-- TODO: Create a 'form' for users to post new comments. Action can be '#'. -->
+             <form action="#">
                 <!-- TODO: Use a 'fieldset' to group the controls. -->
                     <!-- TODO: Add a 'legend', e.g., "Leave a Comment". -->
-
+                <fieldset>
                     <!-- TODO: Add a 'label' and 'textarea' for the comment box.
                          - label 'for': "new-comment"
                          - textarea 'id': "new-comment", required -->
-                    
+                    <label for="new-comment">New Comment</label> <br>
+                    <textarea id="new-comment" required>Please enter your comment here</textarea> <br>
                     <!-- TODO: Add a 'button' to submit the comment.
                          - type="submit", Text: "Post Comment" -->
+                    <button type="submit">Post Comment</button><br>
                 <!-- End of fieldset. -->
+                 </fieldset>
             <!-- End of form. -->
+             </form>
         <!-- End of discussion section. -->
-
+    </section>
     <!-- End of main. -->
+    </main>
 </body>
 </html>
