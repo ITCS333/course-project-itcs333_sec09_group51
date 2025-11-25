@@ -528,13 +528,14 @@ function validateUrl($url) {
  */
 function sanitizeInput($data) {
     // TODO: Trim whitespace using trim()
-    
+    $data = trim($data);
     // TODO: Strip HTML tags using strip_tags()
-    
+    $data = strip_tags($data);
     // TODO: Convert special characters using htmlspecialchars()
     // Use ENT_QUOTES to escape both double and single quotes
-    
+    $data = htmlspecialchars($data , ENT_QUOTES ,"UTF-8" );
     // TODO: Return sanitized data
+    return $data ;
 }
 
 
@@ -547,13 +548,16 @@ function sanitizeInput($data) {
  */
 function validateRequiredFields($data, $requiredFields) {
     // TODO: Initialize empty array for missing fields
-    
+    $missing =[];
     // TODO: Loop through required fields
     // Check if each field exists in data and is not empty
     // If missing or empty, add to missing fields array
-    
+    foreach($requiredFields as $field )
+        if(empty($data[$field]))
+            $missing[]=$field;
     // TODO: Return result array
     // ['valid' => (count($missing) === 0), 'missing' => $missing]
+    return ['valid' => (count($missing) === 0), 'missing' => $missing];
 }
 
 ?>
