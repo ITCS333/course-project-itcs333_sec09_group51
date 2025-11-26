@@ -496,13 +496,15 @@ try {
  */
 function sendResponse($data, $statusCode = 200) {
     // TODO: Set HTTP response code using http_response_code()
-    
+    http_response_code($statusCode);
     // TODO: Ensure data is an array
     // If not, wrap it in an array
-    
+    header('Content-Type: application/json');
+    if (!is_array($data))
+        $data = ['data' => $data];
     // TODO: Echo JSON encoded data
     // Use JSON_PRETTY_PRINT for readability (optional)
-    
+    echo json_encode($data, JSON_PRETTY_PRINT);
     // TODO: Exit to prevent further execution
     exit;
 }
@@ -517,10 +519,7 @@ function sendResponse($data, $statusCode = 200) {
 function validateUrl($url) {
     // TODO: Use filter_var with FILTER_VALIDATE_URL
     // Return true if valid, false otherwise
-    if (filter_var($url , FILTER_VALIDATE_URL ))
-        return true ;
-    else 
-        return false ;
+    return (filter_var($url , FILTER_VALIDATE_URL ));
 }
 
 
