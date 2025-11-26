@@ -18,7 +18,9 @@
     <!-- TODO: Add a title, e.g., "Manage Resources". -->
     <title>Manage Resources</title>
     <!-- TODO: Link to your CSS framework or stylesheet. -->
-     <link rel="stylesheet" href="styleSheet" href= "admin.css">
+    <link rel="stylesheet" href="styleSheet" href= "admin.css">
+     <script src="admin.js" defer></script>
+
 </head>
 <body>
 
@@ -58,7 +60,7 @@
                     <input type="url" id="resource-link" required></p>
                     <!-- TODO: Add a 'button' to submit the form.
                          - id="add-resource", type="submit", Text: "Add Resource" -->
-                    <button id="add-resource" type="submit">Add Resource</button>
+                    <button id="add-resource" type="submit" onclick="createResourceRow">Add Resource</button>
                 <!-- End of fieldset. -->
                  </fieldset>
             <!-- End of form. -->
@@ -84,7 +86,7 @@
                     </tr>
                 </thead>
                 <!-- TODO: Create a 'tbody' for the data. -->
-                 <tbody>
+                 <tbody id="resources-tbody" >
                     <!-- TODO: Add 2-3 rows of dummy data to see the structure. -->
                     <!-- Example Row 1: -->
                     <!-- TODO: Create a 'tr' for the first resource. -->

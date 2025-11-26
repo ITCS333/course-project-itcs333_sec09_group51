@@ -17,9 +17,9 @@ let resources = [];
 
 // --- Element Selections ---
 // TODO: Select the resource form ('#resource-form').
-
+let form = document.getElementById('resource-form')
 // TODO: Select the resources table body ('#resources-tbody').
-
+let tbody = document.getElementById('resource-tbody')
 // --- Functions ---
 
 /**
@@ -34,6 +34,30 @@ let resources = [];
  */
 function createResourceRow(resource) {
   // ... your implementation here ...
+  
+  let tr = document.createElement('tr');
+  let title = document.createElement('td');
+  let desc = document.createElement('td');
+  let button = document.createElement('td');
+  
+  let edit = document.createElement('button');
+  edit.textContent = 'Edit';
+  edit.className = 'edit-btn' ;
+  edit.setAttribute(`data-id="${id}"`);
+  
+  let delet = document.createElement('button');
+  delet.textContent = 'Delete';
+  delet.className = 'delete-btn' ;
+  delet.setAttribute(`data-id="${id}"`);
+ 
+  button.appendChild(edit);
+  button.appendChild(delet);
+ 
+  tr.appendChild(title);
+  tr.appendChild(desc);
+  tr.appendChild(button);
+
+  return tr ;
 }
 
 /**
