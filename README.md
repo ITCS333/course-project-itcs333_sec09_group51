@@ -8,7 +8,6 @@
   <li>Fatema Abbas Abdulla 202305589  </li>
   <li>Sondos Taher Ali 202308508 </li>
 </ul>
-## A table indicating which student was responsible for which task.
 <table>
   <tr><th> task </th><th>Student Name</th></tr>
   <tr><td>1</td><td>Sondos Taher Ali 202308508</td></tr>
