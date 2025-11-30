@@ -124,7 +124,11 @@ function handleAddResource(event) {
  */
 function handleTableClick(event) {
   // ... your implementation here ...
-
+   let tar = event.target;
+    if (tar.classList.contains('delete-btn')) {
+        let resID = tar.getAttribute('data-id'); 
+        resources = resources.filter(resource => resource.id !== resID);
+        renderTable();}
 }
 
 /**
@@ -139,6 +143,26 @@ function handleTableClick(event) {
  */
 async function loadAndInitialize() {
   // ... your implementation here ...
+   try {
+        // Fetch data from resources.json
+        const response = await fetch('resources.json');
+        resources = await response.json();
+        
+        // Render the table with fetched data
+        renderTable();
+        
+        // Add event listeners
+        form.addEventListener('submit', handleAddResource);
+        tbody.addEventListener('click', handleTableClick);
+        
+    } catch (error) {
+        console.error('Error loading resources:', error);
+        // Initialize with empty array if fetch fails
+        resources = [];
+        renderTable();
+        form.addEventListener('submit', handleAddResource);
+        tbody.addEventListener('click', handleTableClick);
+    }
 }
 
 // --- Initial Page Load ---
