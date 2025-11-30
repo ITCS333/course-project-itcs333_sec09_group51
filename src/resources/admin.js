@@ -17,9 +17,9 @@ let resources = [];
 
 // --- Element Selections ---
 // TODO: Select the resource form ('#resource-form').
-let form = document.getElementById('resource-form')
+let form = document.getElementById('resource-form');
 // TODO: Select the resources table body ('#resources-tbody').
-let tbody = document.getElementById('resource-tbody')
+let tbody = document.getElementById('resource-tbody');
 // --- Functions ---
 
 /**
@@ -37,7 +37,9 @@ function createResourceRow(resource) {
   
   let tr = document.createElement('tr');
   let title = document.createElement('td');
+  title.textContent= resource.title ;
   let desc = document.createElement('td');
+  desc.textContent = resource.description ;
   let button = document.createElement('td');
   
   let edit = document.createElement('button');
@@ -70,6 +72,10 @@ function createResourceRow(resource) {
  */
 function renderTable() {
   // ... your implementation here ...
+  tbody.innerHTML = '';
+   resources.forEach(resource => {let row = createResourceRow(resource); 
+    tbody.appendChild(row);
+   } )
 }
 
 /**
@@ -85,6 +91,25 @@ function renderTable() {
  */
 function handleAddResource(event) {
   // ... your implementation here ...
+  event.preventDefult();
+  let title = document.getElementById('resource-title');
+  let desc = document.getElementById('resource-description');
+  let link = document.getElementById('resource-link');
+
+  title= title.value.trim();
+  desc= desc.value.trim();
+  link= link.value.trim();
+
+  let newres = { 
+    id: `res_${Date.now()}` , 
+    title: title , 
+    description: desc ,
+    link: link 
+  };
+
+  resources.push(newres);
+  renderTable();
+  form.reset();
 }
 
 /**
@@ -99,6 +124,7 @@ function handleAddResource(event) {
  */
 function handleTableClick(event) {
   // ... your implementation here ...
+
 }
 
 /**
