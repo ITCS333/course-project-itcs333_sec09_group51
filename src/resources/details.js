@@ -23,7 +23,12 @@ let currentComments = [];
 
 // --- Element Selections ---
 // TODO: Select all the elements you added IDs for in step 2.
-
+let title = document.getElementById("resource-title");
+let desc = document.getElementById("resource-description");
+let link = document.getElementById("resource-link");
+let list = document.getElementById("comment-list");
+let form = document.getElementById("comment-form");
+let textarea = document.getElementById("new-comment");
 // --- Functions ---
 
 /**
@@ -35,6 +40,8 @@ let currentComments = [];
  */
 function getResourceIdFromURL() {
   // ... your implementation here ...
+  let urlpram = new URLSearchParams (window.location.search);
+  return urlpram.get('id');
 }
 
 /**
@@ -47,6 +54,10 @@ function getResourceIdFromURL() {
  */
 function renderResourceDetails(resource) {
   // ... your implementation here ...
+  title.textContent = resource.title ;
+  desc.textContent = resource.description ;
+  link.herf = resource.link ;
+
 }
 
 /**
@@ -57,6 +68,16 @@ function renderResourceDetails(resource) {
  */
 function createCommentArticle(comment) {
   // ... your implementation here ...
+  let artical = document.createElement('article');
+  let p = document.createElement('p');
+  p.textContent = comment.text ;
+  let footer = document.createElement('footer');
+  footer.textContent = 'Posted by:'+comment.author ;
+
+  artical.appendChild(p);
+  artical.appendChild(footer);
+
+  return artical;
 }
 
 /**
@@ -69,6 +90,11 @@ function createCommentArticle(comment) {
  */
 function renderComments() {
   // ... your implementation here ...
+  list.innerHTML = '';
+  currentComments.forEach (comment => {
+    let comm = createCommentArticle(comment);
+    list.appendChild(comm);
+  })
 }
 
 /**
@@ -86,6 +112,17 @@ function renderComments() {
  */
 function handleAddComment(event) {
   // ... your implementation here ...
+  event.preventDefault();
+  let commentText = newComment.value.trim();
+  if(!commentText)
+    return;
+  
+  let commentObj = {
+    author: 'Student', text: commentText};
+  
+  currentComments.push(commentObj);
+  renderComments();
+  newComment.value= '';
 }
 
 /**
@@ -107,6 +144,38 @@ function handleAddComment(event) {
  */
 async function initializePage() {
   // ... your implementation here ...
+  currentResourceId= getResourceIdFromURL();
+
+  if(!currentResourceId){
+    resourceTitle.textContent = "Resource not found." ;
+    return;}
+  
+   try {
+    const [resourcesResponse, commentsResponse] = await Promise.all([
+      fetch('resources.json'),
+      fetch('resource-comments.json')
+    ]);
+    
+    const resources = await resourcesResponse.json();
+    const commentsData = await commentsResponse.json();
+    
+    const resource = resources.find(r => r.id == currentResourceId);
+    
+    if (!resource) {
+      resourceTitle.textContent = "Resource not found.";
+      return;
+    }
+    
+    currentComments = commentsData[currentResourceId] || [];
+    
+    renderResourceDetails(resource);
+    renderComments();
+    
+    commentForm.addEventListener('submit', handleAddComment);
+  } catch (error) {
+    console.error('Error loading data:', error);
+    resourceTitle.textContent = "Error loading resource. Please try again.";
+  }
 }
 
 // --- Initial Page Load ---
