@@ -13,7 +13,7 @@
 
 // --- Element Selections ---
 // TODO: Select the section for the resource list ('#resource-list-section').
-
+let list = document.getElementById('resource-list-section');
 // --- Functions ---
 
 /**
@@ -25,6 +25,20 @@
  */
 function createResourceArticle(resource) {
   // ... your implementation here ...
+  let artical = document.createElement('artical');
+  let ntitle = document.createElement('h3');
+  ntitle.textContent = resource.title ; 
+  let desc = document.createElement('p');
+  desc.textContent = resource.description ;
+  let nlink = document.createElement('a');
+  nlink.textContent = "View Resource & Discussion";
+  nlink.href = 'details.html?id=${id}';
+
+  artical.appendChild(ntitle);
+  artical.appendChild(desc);
+  artical.appendChild(nlink);
+
+  return artical
 }
 
 /**
@@ -40,6 +54,16 @@ function createResourceArticle(resource) {
  */
 async function loadResources() {
   // ... your implementation here ...
+  let response = await fetch ('resources.json');
+  let resources = await response.json();
+
+  listSection.innerHTML = '';
+
+  resources.array.forEach(resource => {
+    let artical = createResourceArticle(resource);
+    listSection.appendChild(artical);
+  });
+
 }
 
 // --- Initial Page Load ---

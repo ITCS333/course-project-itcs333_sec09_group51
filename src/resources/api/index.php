@@ -52,36 +52,50 @@
 
 // TODO: Set headers for JSON response and CORS
 // Set Content-Type to application/json
+header('Content-Type: application/json');
 // Allow cross-origin requests (CORS) if needed
+header('Access-Control-Allow-Origin: *');
 // Allow specific HTTP methods (GET, POST, PUT, DELETE, OPTIONS)
+header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
 // Allow specific headers (Content-Type, Authorization)
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 
 // TODO: Handle preflight OPTIONS request
 // If the request method is OPTIONS, return 200 status and exit
-
+if ($_SERVER['REQUEST_METHOD'] === 'OPTION') {
+    http_response_code(200);
+    exit();}
 
 // TODO: Include the database connection class
 // Assume the Database class has a method getConnection() that returns a PDO instance
 // Example: require_once '../config/Database.php';
-
+include '../config/Database.php';
 
 // TODO: Get the PDO database connection
 // Example: $database = new Database();
 // Example: $db = $database->getConnection();
-
+$database = new Database();
+$db = $database->getConnection();
 
 // TODO: Get the HTTP request method
 // Use $_SERVER['REQUEST_METHOD']
-
+$method =  $_SERVER['REQUEST_METHOD'];
 
 // TODO: Get the request body for POST and PUT requests
 // Use file_get_contents('php://input') to get raw POST data
 // Decode JSON data using json_decode() with associative array parameter
-
+if ($method === 'POST' || $method === 'PUT') {
+        $input =file_get_contents('php://input');
+        $inputData = json_decode($input , true);
+}
 
 // TODO: Parse query parameters
 // Get 'action', 'id', 'resource_id', 'comment_id' from $_GET
+$action = $_REQUEST['action'] ?? null ;
+$id     = $_REQUEST['id'] ?? null;
+$resource_id = $_REQUEST['resource_id'] ?? null;
+$comment_id  = $_REQUEST['comment_id'] ?? null;
 
 
 // ============================================================================
@@ -104,32 +118,50 @@
 function getAllResources($db) {
     // TODO: Initialize the base SQL query
     // SELECT id, title, description, link, created_at FROM resources
-    
+    $sql= 'SELECT id, title, description, link, created_at FROM resources';
     // TODO: Check if search parameter exists
     // If yes, add WHERE clause using LIKE to search title and description
     // Use OR to search both fields
+    $search = $_GET['search'] ?? null;
+     $params = [];
+    if (!empty($search)) {
+        $sql .= " WHERE title LIKE :search OR description LIKE :search";
+        $params[':search'] = "%$search%"; }
     
     // TODO: Check if sort parameter exists and validate it
     // Only allow: title, created_at
     // Default to created_at if not provided or invalid
-    
+    $sort = $_GET['sort'] ?? 'created_at';
+    $allowedSorts = ['title', 'created_at'];
+    if (!in_array($sort, $allowedSorts)) 
+        $sort = 'created_at';
     // TODO: Check if order parameter exists and validate it
     // Only allow: asc, desc
     // Default to desc if not provided or invalid
-    
+    $order = $_GET['order'] ?? 'desc';
+    $allowedOrders = ['asc', 'desc'];
+    if (!in_array(strtolower($order), $allowedOrders)) 
+        $order = 'desc';
     // TODO: Add ORDER BY clause to query
-    
+    $sql .= " ORDER BY $sort $order";
+    try{
     // TODO: Prepare the SQL query using PDO
-    
+    $stmt = $db->prepare($sql);
+
     // TODO: If search parameter was used, bind the search parameter
     // Use % wildcards for LIKE search
-    
+    if (!empty($search)) 
+            $stmt->bindValue(':search', $search, PDO::PARAM_STR);
     // TODO: Execute the query
-    
+    $stmt->execute();
+
     // TODO: Fetch all results as an associative array
-    
+    $resources = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     // TODO: Return JSON response with success status and data
     // Use the helper function sendResponse()
+    sendResponse(true, 'Resources retrieved successfully', $resources);
+    }
 }
 
 
@@ -181,7 +213,7 @@ function createResource($db, $data) {
     // TODO: Validate required fields
     // Check if title and link are provided and not empty
     // If any required field is missing, return error response with 400 status
-    
+    if (!$db || !$data ) throw new Exception('ID required');
     // TODO: Sanitize input data
     // Trim whitespace from all fields
     // Validate URL format for link using filter_var with FILTER_VALIDATE_URL
@@ -431,7 +463,9 @@ try {
         // TODO: Check if action === 'comments'
         // Get resource_id from query parameters
         // Call getCommentsByResourceId()
-        
+        if($action === 'comments'){
+            $id = $_GET['resource_id'];
+            gatComm
         // If id parameter exists, get single resource
         // TODO: Check if 'id' parameter exists in $_GET
         // Call getResourceById()
