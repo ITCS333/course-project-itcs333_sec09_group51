@@ -463,9 +463,7 @@ try {
         // TODO: Check if action === 'comments'
         // Get resource_id from query parameters
         // Call getCommentsByResourceId()
-        if($action === 'comments'){
-            $id = $_GET['resource_id'];
-            gatComm
+
         // If id parameter exists, get single resource
         // TODO: Check if 'id' parameter exists in $_GET
         // Call getResourceById()
