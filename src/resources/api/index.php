@@ -453,21 +453,30 @@ function deleteResource($db, $resourceId) {
 function getCommentsByResourceId($db, $resourceId) {
     // TODO: Validate that resource_id is provided and is numeric
     // If not, return error response with 400 status
-    
+    if (empty($resourceId) || !is_numeric($resourceId)) {
+        sendResponse(false, 'Invalid or missing resource ID', [], 400);
+        return ;
+    }
     // TODO: Prepare SQL query to select comments for the resource
     // SELECT id, resource_id, author, text, created_at 
     // FROM comments 
     // WHERE resource_id = ? 
     // ORDER BY created_at ASC
-    
+    $sql = 'SELECT id, resource_id, author, text, created_at FROM comments WHERE resource_id = ? ORDER BY created_at ASC';
     // TODO: Bind the resource_id parameter
-    
+    $stmt = $db->prepare($sql);
+    $stmt->bindParm(1, $resourceId, PDO::PARAM_INT);    
     // TODO: Execute the query
-    
+    $executeResult = $stmt->execute([$resourceId]);
     // TODO: Fetch all results as an associative array
-    
+    $commnt = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // TODO: Return success response with comments data
     // Even if no comments exist, return empty array (not an error)
+    if ($commnt) {
+        sendResponse(true, 'Comments retrieved successfully', $commnt);
+    } else {
+        sendResponse(true, 'No comments found for this resource', [], 200);
+    }
 }
 
 
