@@ -568,21 +568,42 @@ function createComment($db, $data) {
 function deleteComment($db, $commentId) {
     // TODO: Validate that comment_id is provided and is numeric
     // If not, return error response with 400 status
-    
+    if (empty($commentId) || !is_numeric($commentId)) {
+        sendResponse(false, 'Invalid or missing comment ID', [], 400);
+        return ;
+    }
     // TODO: Check if comment exists
     // Prepare and execute a SELECT query
     // If not found, return error response with 404 status
-    
+    $checkSql = 'SELECT id FROM comments WHERE id = ?';
+    $checkStmt = $db->prepare($checkSql);
+    $checkStmt ->execute([$commentId]);
+
+    if ($checkStmt->rowCount() === 0) {
+        sendResponse(false, 'Comment not found', [], 404);
+        return;
+    }
+
     // TODO: Prepare DELETE query
     // DELETE FROM comments WHERE id = ?
-    
+    $deleteQuery = 'DELETE FROM comments WHERE id = ?';
+    $stmt = $db->prepare($deleteQuery);
+
     // TODO: Bind the comment_id parameter
-    
+    $stmt->bindParm(1, $commentId, PDO::PARAM_INT);
+
     // TODO: Execute the query
-    
+    $executeResult = $stmt->execute();
+
     // TODO: Check if delete was successful
     // If yes, return success response with 200 status
     // If no, return error response with 500 status
+    if ($executeResult) {
+        sendResponse(true, 'Comment deleted successfully', [], 200);
+    } else {
+        sendResponse(false, 'Failed to delete comment', [], 500);
+    }
+    
 }
 
 
