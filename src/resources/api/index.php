@@ -71,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTION') {
 // Assume the Database class has a method getConnection() that returns a PDO instance
 // Example: require_once '../config/Database.php';
 include '../config/Database.php';
+$host = "localhost";
 
 // TODO: Get the PDO database connection
 // Example: $database = new Database();
@@ -123,11 +124,11 @@ function getAllResources($db) {
     // If yes, add WHERE clause using LIKE to search title and description
     // Use OR to search both fields
     $search = $_GET['search'] ?? null;
-     $params = [];
+    $params = [];
     if (!empty($search)) {
         $sql .= " WHERE title LIKE :search OR description LIKE :search";
-        $params[':search'] = "%$search%"; }
-    
+        $params[':search'] = "%$search%";
+    }
     // TODO: Check if sort parameter exists and validate it
     // Only allow: title, created_at
     // Default to created_at if not provided or invalid
@@ -142,16 +143,17 @@ function getAllResources($db) {
     $allowedOrders = ['asc', 'desc'];
     if (!in_array(strtolower($order), $allowedOrders)) 
         $order = 'desc';
-    // TODO: Add ORDER BY clause to query
+    // TODO: Add ORDER BY clause to query   
     $sql .= " ORDER BY $sort $order";
-    try{
+    
+    try {
     // TODO: Prepare the SQL query using PDO
     $stmt = $db->prepare($sql);
 
     // TODO: If search parameter was used, bind the search parameter
     // Use % wildcards for LIKE search
     if (!empty($search)) 
-            $stmt->bindValue(':search', $search, PDO::PARAM_STR);
+            $stmt->bindValue(':search', '%$search%', PDO::PARAM_STR);
     // TODO: Execute the query
     $stmt->execute();
 
@@ -161,7 +163,10 @@ function getAllResources($db) {
     // TODO: Return JSON response with success status and data
     // Use the helper function sendResponse()
     sendResponse(true, 'Resources retrieved successfully', $resources);
-    }
+    
+    }catch(PDOException $e){
+         sendResponse(false, 'Failed to retrieve resources: ' . $e->getMessage(), [], 500);
+    } 
 }
 
 
@@ -213,7 +218,8 @@ function createResource($db, $data) {
     // TODO: Validate required fields
     // Check if title and link are provided and not empty
     // If any required field is missing, return error response with 400 status
-    if (!$db || !$data ) throw new Exception('ID required');
+    
+    // if (!$db || !$data ) throw new Exception('ID required');
     // TODO: Sanitize input data
     // Trim whitespace from all fields
     // Validate URL format for link using filter_var with FILTER_VALIDATE_URL
@@ -458,11 +464,23 @@ try {
     
     if ($method === 'GET') {
         // TODO: Check the action parameter to determine which function to call
-        
+       
         // If action is 'comments', get comments for a resource
         // TODO: Check if action === 'comments'
         // Get resource_id from query parameters
         // Call getCommentsByResourceId()
+
+        if($action === 'comments'){
+            if (isset($_GET['resource_id']))
+                getCommentsByResourceId($db, $_GET['resource_id']);
+            else
+                sendResponse(false, 'resource_id parameter is required', [], 400);
+        }
+        else if (isset($_GET['id'])){
+            getResourceById($db, $_GET['id']);
+        }
+        else
+            getAllResources($db);   
 
         // If id parameter exists, get single resource
         // TODO: Check if 'id' parameter exists in $_GET
@@ -477,13 +495,20 @@ try {
         // If action is 'comment', create a new comment
         // TODO: Check if action === 'comment'
         // Call createComment()
-        
+        if($action === 'comments')
+            createComment($db, $inputData);
+        else
+            createResource($db, $inputData);
         // Otherwise, create a new resource
         // TODO: Call createResource()
         
     } elseif ($method === 'PUT') {
         // TODO: Update a resource
         // Call updateResource()
+        if($action === 'comments')
+            updateResource($db, $inputData);
+        else
+            sendResponse(false, 'Invalid action for PUT method', [], 400);
         
     } elseif ($method === 'DELETE') {
         // TODO: Check the action parameter to determine which function to call
@@ -492,7 +517,13 @@ try {
         // TODO: Check if action === 'delete_comment'
         // Get comment_id from query parameters or request body
         // Call deleteComment()
-        
+        if ($action === 'delete_comment') {
+            if (isset($_GET['comment_id']))
+                deleteComment($db, $_GET['comment_id']);
+            else
+                sendResponse(false, 'comment_id parameter is required', [], 400);
+        }else
+            deleteResource($db, $resource_id);
         // Otherwise, delete a resource
         // TODO: Get resource id from query parameter or request body
         // Call deleteResource()
@@ -501,18 +532,23 @@ try {
         // TODO: Return error for unsupported methods
         // Set HTTP status to 405 (Method Not Allowed)
         // Return JSON error message using sendResponse()
+        sendResponse(false, 'Method Not Allowed', [], 405);
     }
     
 } catch (PDOException $e) {
     // TODO: Handle database errors
     // Log the error message (optional, use error_log())
+    error_log($e->getMessage());
     // Return generic error response with 500 status
     // Do NOT expose detailed error messages to the client in production
+    sendResponse(false, 'Database error' , [], 500);
     
 } catch (Exception $e) {
     // TODO: Handle general errors
     // Log the error message (optional)
-    // Return error response with 500 status
+    error_log($e->getMessage());
+    // Return error response with 500 status    
+    sendResponse(false, 'Server error: ' . $e->getMessage(), [], 500);
 }
 
 
