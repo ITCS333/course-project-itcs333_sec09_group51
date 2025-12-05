@@ -1,96 +1,135 @@
-/*
-  Requirement: Make the "Manage Assignments" page interactive.
-
-  Instructions:
-  1. Link this file to `admin.html` using:
-     <script src="admin.js" defer></script>
-  
-  2. In `admin.html`, add an `id="assignments-tbody"` to the <tbody> element
-     so you can select it.
-  
-  3. Implement the TODOs below.
-*/
-
-// --- Global Data Store ---
-// This will hold the assignments loaded from the JSON file.
 let assignments = [];
 
-// --- Element Selections ---
-// TODO: Select the assignment form ('#assignment-form').
+const assignmentForm = document.querySelector('#assignment-form');
+const assignmentsTableBody = document.querySelector('#assignments-tbody');
 
-// TODO: Select the assignments table body ('#assignments-tbody').
 
-// --- Functions ---
-
-/**
- * TODO: Implement the createAssignmentRow function.
- * It takes one assignment object {id, title, dueDate}.
- * It should return a <tr> element with the following <td>s:
- * 1. A <td> for the `title`.
- * 2. A <td> for the `dueDate`.
- * 3. A <td> containing two buttons:
- * - An "Edit" button with class "edit-btn" and `data-id="${id}"`.
- * - A "Delete" button with class "delete-btn" and `data-id="${id}"`.
- */
 function createAssignmentRow(assignment) {
-  // ... your implementation here ...
+    const tr = document.createElement('tr');
+
+  
+    const tdTitle = document.createElement('td');
+    tdTitle.textContent = assignment.title;
+    tr.appendChild(tdTitle);
+
+   
+    const tdDue = document.createElement('td');
+    tdDue.textContent = assignment.dueDate;
+    tr.appendChild(tdDue);
+
+   
+    const tdActions = document.createElement('td');
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.classList.add('edit-btn');
+    editBtn.dataset.id = assignment.id;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.classList.add('delete-btn');
+    deleteBtn.dataset.id = assignment.id;
+
+    tdActions.appendChild(editBtn);
+    tdActions.appendChild(deleteBtn);
+    tr.appendChild(tdActions);
+
+    return tr;
 }
 
-/**
- * TODO: Implement the renderTable function.
- * It should:
- * 1. Clear the `assignmentsTableBody`.
- * 2. Loop through the global `assignments` array.
- * 3. For each assignment, call `createAssignmentRow()`, and
- * append the resulting <tr> to `assignmentsTableBody`.
- */
+// Render the table with current assignments
 function renderTable() {
-  // ... your implementation here ...
+    // Clear table body
+    assignmentsTableBody.innerHTML = '';
+
+    // Loop through assignments and append rows
+    assignments.forEach(assignment => {
+        const row = createAssignmentRow(assignment);
+        assignmentsTableBody.appendChild(row);
+    });
 }
 
-/**
- * TODO: Implement the handleAddAssignment function.
- * This is the event handler for the form's 'submit' event.
- * It should:
- * 1. Prevent the form's default submission.
- * 2. Get the values from the title, description, due date, and files inputs.
- * 3. Create a new assignment object with a unique ID (e.g., `id: \`asg_${Date.now()}\``).
- * 4. Add this new assignment object to the global `assignments` array (in-memory only).
- * 5. Call `renderTable()` to refresh the list.
- * 6. Reset the form.
- */
+// Handle adding a new assignment
 function handleAddAssignment(event) {
-  // ... your implementation here ...
+    event.preventDefault();
+
+    // Get input values
+    const title = document.querySelector('#assignment-title').value.trim();
+    const description = document.querySelector('#assignment-description').value.trim();
+    const dueDate = document.querySelector('#assignment-due-date').value;
+    const files = document.querySelector('#assignment-files').value.trim();
+
+    if (!title || !dueDate) {
+        alert('Please fill in the required fields.');
+        return;
+    }
+
+    // Create new assignment object
+    const newAssignment = {
+        id: `asg_${Date.now()}`,
+        title,
+        description,
+        dueDate,
+        files
+    };
+
+    // Add to global array
+    assignments.push(newAssignment);
+
+    // Refresh table
+    renderTable();
+
+    // Reset form
+    assignmentForm.reset();
 }
 
-/**
- * TODO: Implement the handleTableClick function.
- * This is an event listener on the `assignmentsTableBody` (for delegation).
- * It should:
- * 1. Check if the clicked element (`event.target`) has the class "delete-btn".
- * 2. If it does, get the `data-id` attribute from the button.
- * 3. Update the global `assignments` array by filtering out the assignment
- * with the matching ID (in-memory only).
- * 4. Call `renderTable()` to refresh the list.
- */
+// Handle Edit/Delete clicks using delegation
 function handleTableClick(event) {
-  // ... your implementation here ...
+    const target = event.target;
+
+    // Delete button clicked
+    if (target.classList.contains('delete-btn')) {
+        const id = target.dataset.id;
+        assignments = assignments.filter(a => a.id !== id);
+        renderTable();
+    }
+
+    // Edit button clicked (simple example: fill form with data)
+    if (target.classList.contains('edit-btn')) {
+        const id = target.dataset.id;
+        const assignment = assignments.find(a => a.id === id);
+        if (assignment) {
+            document.querySelector('#assignment-title').value = assignment.title;
+            document.querySelector('#assignment-description').value = assignment.description;
+            document.querySelector('#assignment-due-date').value = assignment.dueDate;
+            document.querySelector('#assignment-files').value = assignment.files;
+
+            // Optional: remove the old assignment so submitting updates it
+            assignments = assignments.filter(a => a.id !== id);
+        }
+    }
 }
 
-/**
- * TODO: Implement the loadAndInitialize function.
- * This function needs to be 'async'.
- * It should:
- * 1. Use `fetch()` to get data from 'assignments.json'.
- * 2. Parse the JSON response and store the result in the global `assignments` array.
- * 3. Call `renderTable()` to populate the table for the first time.
- * 4. Add the 'submit' event listener to `assignmentForm` (calls `handleAddAssignment`).
- * 5. Add the 'click' event listener to `assignmentsTableBody` (calls `handleTableClick`).
- */
+// Load assignments from JSON and initialize page
 async function loadAndInitialize() {
-  // ... your implementation here ...
+    try {
+        const response = await fetch('assignments.json');
+        if (!response.ok) throw new Error('Failed to load assignments.json');
+        const data = await response.json();
+        assignments = data;
+
+        renderTable();
+
+        
+        assignmentForm.addEventListener('submit', handleAddAssignment);
+        assignmentsTableBody.addEventListener('click', handleTableClick);
+    } catch (error) {
+        console.error('Error loading assignments:', error);
+        // Still attach event listeners even if fetch fails
+        assignmentForm.addEventListener('submit', handleAddAssignment);
+        assignmentsTableBody.addEventListener('click', handleTableClick);
+    }
 }
 
-// --- Initial Page Load ---
-// Call the main async function to start the application.
+
 loadAndInitialize();
