@@ -498,29 +498,59 @@ function createComment($db, $data) {
     // TODO: Validate required fields
     // Check if resource_id, author, and text are provided and not empty
     // If any required field is missing, return error response with 400 status
-    
+    if (empty($data['resource_id']) || empty($data['author']) || empty($data['text'])) {
+        sendResponse(false, 'resource_id, author, and text are required', [], 400);
+        return;
+    }
+
     // TODO: Validate that resource_id is numeric
     // If not, return error response with 400 status
-    
+    if (!is_numeric($data['resource_id'])) {
+        sendResponse(false, 'Invalid resource_id', [], 400);
+        return;
+    }
+
     // TODO: Check if the resource exists
     // Prepare and execute SELECT query on resources table
     // If resource not found, return error response with 404 status
-    
+    $resourceId = $data['resource_id'];
+    $checkSql = 'SELECT id FROM resources WHERE id = ?';
+    $checkStmt = $db->prepare($checkSql);
+    $checkStmt ->execute([$resourceId]);
+
+    if ($checkStmt->rowCount() === 0) {
+        sendResponse(false, 'Resource not found', [], 404);
+        return;
+    }
+
     // TODO: Sanitize input data
     // Trim whitespace from author and text
-    
+    $author = trim($data['author']);
+    $text = trim($data['text']);
+
     // TODO: Prepare INSERT query
     // INSERT INTO comments (resource_id, author, text) VALUES (?, ?, ?)
-    
+    $insertSql = 'INSERT INTO comments (resource_id, author, text) VALUES (?, ?, ?)';
+    $stmt = $db->prepare($insertSql);   
+
     // TODO: Bind parameters
     // Bind resource_id, author, and text
-    
+    $stmt->bindParam(1, $resourceId, PDO::PARAM_INT);
+    $stmt->bindParam(2, $author, PDO::PARAM_STR);
+    $stmt->bindParam(3, $text, PDO::PARAM_STR);
+
     // TODO: Execute the query
-    
+    $executeResult = $stmt->execute();
     // TODO: Check if insert was successful
     // If yes, get the last inserted ID using $db->lastInsertId()
     // Return success response with 201 status and the new comment ID
     // If no, return error response with 500 status
+    if ($executeResult && $stmt->rowCount() > 0) {
+        $newId = $db->lastInsertId();
+        sendResponse(true, 'Comment created successfully', ['id' => $newId], 201);
+    } else {
+        sendResponse(false, 'Failed to create comment', [], 500);
+    }
 }
 
 
