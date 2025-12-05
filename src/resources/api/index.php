@@ -378,37 +378,59 @@ function updateResource($db, $data) {
 function deleteResource($db, $resourceId) {
     // TODO: Validate that resource ID is provided and is numeric
     // If not, return error response with 400 status
-    
+     if (empty($resourceId) || !is_numeric($resourceId)) {
+        sendResponse(false, 'Invalid or missing resource ID', [], 400);
+        return ;
+    }
+
     // TODO: Check if resource exists
     // Prepare and execute a SELECT query
     // If not found, return error response with 404 status
-    
+    $checkSql = 'SELECT id FROM resources WHERE id = ?';
+    $checkStmt = $db->prepare($checkSql);   
+    $checkStmt ->execute([$resourceId]);
+
+    if ($checkStmt->rowCount() === 0) {
+        sendResponse(false, 'Resource not found', [], 404);
+        return;
+    }
+
     // TODO: Begin a transaction (for data integrity)
     // Use $db->beginTransaction()
+    $db->beginTransaction();
     
     try {
         // TODO: First, delete all associated comments
         // Prepare DELETE query for comments table
         // DELETE FROM comments WHERE resource_id = ?
-        
+        $deleteCommentsSql = 'DELETE FROM comments WHERE resource_id = ?';
+        $deleteCommentsStmt = $db->prepare($deleteCommentsSql);
+
         // TODO: Bind resource_id and execute
-        
+        $deleteCommentsStmt->execute([$resourceId]);
+
         // TODO: Then, delete the resource
         // Prepare DELETE query for resources table
         // DELETE FROM resources WHERE id = ?
+        $deleteResourceSql = 'DELETE FROM resources WHERE id = ?';
+        $deleteResourceStmt = $db->prepare($deleteResourceSql);
         
         // TODO: Bind resource_id and execute
-        
+        $deleteResourceStmt->execute([$resourceId]);
+
         // TODO: Commit the transaction
         // Use $db->commit()
-        
+        $db->commit();
+
         // TODO: Return success response with 200 status
-        
+        sendResponse(true, 'Resource and associated comments deleted successfully', [], 200);
+
     } catch (Exception $e) {
         // TODO: Rollback the transaction on error
         // Use $db->rollBack()
-        
+        $db->rollBack();
         // TODO: Return error response with 500 status
+        sendResponse(false, 'Failed to delete resource: ' . $e->getMessage(), [], 500); 
     }
 }
 
