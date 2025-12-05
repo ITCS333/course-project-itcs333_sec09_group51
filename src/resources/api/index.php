@@ -226,28 +226,50 @@ function createResource($db, $data) {
     // TODO: Validate required fields
     // Check if title and link are provided and not empty
     // If any required field is missing, return error response with 400 status
-    
+    if (empty($data['title']) || empty($data['link'])) {
+        sendResponse(false, 'Title and link are required', [], 400);
+        return;
+    }
     // if (!$db || !$data ) throw new Exception('ID required');
+    if (!$db || !$data ) 
+        throw new Exception('ID required');
     // TODO: Sanitize input data
     // Trim whitespace from all fields
     // Validate URL format for link using filter_var with FILTER_VALIDATE_URL
     // If URL is invalid, return error response with 400 status
+    $title = trim($data['title']);
+    $description = isset($data['description']) ? trim($data['description']) : '';
+    $link = trim($data['link']);
+    if (!filter_var($link, FILTER_VALIDATE_URL)) {
+        sendResponse(false, 'Invalid URL format for link', [], 400);
+        return;
+    }
     
     // TODO: Set default value for description if not provided
     // Use empty string as default
+    $description = $description ?? '';
     
     // TODO: Prepare INSERT query
     // INSERT INTO resources (title, description, link) VALUES (?, ?, ?)
-    
+    $query = 'INSERT INTO resources (title, description, link) VALUES (?, ?, ?)';
+    $stmt = $db->prepare($query);   
     // TODO: Bind parameters
     // Bind title, description, and link
-    
+    $stmt->bindParam(1, $title, PDO::PARAM_STR);
+    $stmt->bindParam(2, $description, PDO::PARAM_STR);
+    $stmt->bindParam(3, $link, PDO::PARAM_STR);
     // TODO: Execute the query
-    
+    $stmt->execute();
     // TODO: Check if insert was successful
     // If yes, get the last inserted ID using $db->lastInsertId()
     // Return success response with 201 status and the new resource ID
     // If no, return error response with 500 status
+    if ($stmt->rowCount() > 0) {
+        $newId = $db->lastInsertId();
+        sendResponse(true, 'Resource created successfully', ['id' => $newId], 201);
+    } else {
+        sendResponse(false, 'Failed to create resource', [], 500);
+    }
 }
 
 
