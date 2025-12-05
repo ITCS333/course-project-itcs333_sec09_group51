@@ -184,19 +184,27 @@ function getAllResources($db) {
 function getResourceById($db, $resourceId) {
     // TODO: Validate that resource ID is provided and is numeric
     // If not, return error response with 400 status
-    
+    if (empty($resourceId) || !is_numeric($resourceId)) {
+        sendResponse(false, 'Invalid or missing resource ID', [], 400);
+    }
     // TODO: Prepare SQL query to select resource by id
     // SELECT id, title, description, link, created_at FROM resources WHERE id = ?
-    
+    $sql = 'SELECT id, title, description, link, created_at FROM resources WHERE id = ?';
+    $stmt = $db->prepare($sql);
     // TODO: Bind the resource_id parameter
-    
+    $stmt->bindParm(1, $resourceId, PDO::PARAM_INT);
     // TODO: Execute the query
-    
+    $stmt->execute();
     // TODO: Fetch the result as an associative array
-    
+    $resource = $stmt->fetch(PDO::FETCH_ASSOC);
     // TODO: Check if resource exists
     // If yes, return success response with resource data
     // If no, return error response with 404 status
+    if ($resource) {
+        sendResponse(true, 'Resource retrieved successfully', $resource);
+    } else {
+        sendResponse(false, 'Resource not found', [], 404);
+    }
 }
 
 
