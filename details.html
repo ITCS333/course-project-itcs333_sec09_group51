@@ -1,0 +1,148 @@
+<!--
+  Requirement: Create the Dedicated Page for a Single Week
+
+  Instructions:
+  This page displays the full details for one week and allows for discussion.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- TODO: Add meta tags for charset and viewport. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- TODO: Add a title, for now use "Week Details". -->
+    <title>Week Details</title>
+    
+    <!-- TODO: Link to your CSS framework or stylesheet. -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- TODO: Create a 'header' with a main heading ('h1'). Use a dummy title like "Week 1: Introduction to HTML". -->
+    <header class="page-header">
+        <h1 id="week-title">Week 1: Introduction to HTML</h1>
+    </header>
+
+    <!-- TODO: Create the 'main' content area. -->
+    <main class="container">
+        <!-- Section 1: Weekly Information -->
+        <!-- TODO: Use an 'article' to display the main weekly information. -->
+        <article class="week-details">
+            <!-- TODO: Add a paragraph ('p') to display the start date, e.g., "Starts on: YYYY-MM-DD". -->
+           <p id="week-start-date" class="week-meta"><strong>Starts on:</strong> 2024-01-08</p>
+            
+            <!-- TODO: Add a sub-heading ('h2') "Description & Notes". -->
+            <h2>Description & Notes</h2>
+            
+            <!-- TODO: Add a paragraph ('p') with dummy text for the week's detailed notes. -->
+            <div class="week-content">
+              <p id="week-description">This week covers the fundamental building blocks of the web: HTML. We will explore semantic tags, document structure, and basic elements like headings, paragraphs, links, and images.</p>
+                <p>Key learning objectives:</p>
+                <ul>
+                    <li>Understand the basic structure of an HTML document</li>
+                    <li>Learn to use semantic HTML5 elements</li>
+                    <li>Create links, images, lists, and tables</li>
+                    <li>Practice with forms and input elements</li>
+                    <li>Learn about accessibility best practices</li>
+                </ul>
+                <p><strong>Note:</strong> Complete the practice exercises before the next class. The assignment will be posted on the course portal by Wednesday.</p>
+            </div>
+
+            <!-- TODO: Add another sub-heading ('h2') "Exercises & Resources". -->
+            <h2>Exercises & Resources</h2>
+            
+            <!-- TODO: Use an unordered list ('ul') to display the links for the week. -->
+<!-- CHANGED: Added id="week-links-list" -->
+            <ul id="week-links-list" class="resources-list">
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" rel="noopener noreferrer">MDN Web Docs: HTML Guide</a></li>
+                <li><a href="https://www.w3schools.com/html/html_exercises.asp" target="_blank" rel="noopener noreferrer">W3Schools HTML Exercises</a></li>
+                <li><a href="#" target="_blank" rel="noopener noreferrer">Week 1 Practice Worksheet (PDF)</a></li>
+                <li><a href="#" target="_blank" rel="noopener noreferrer">Video: HTML Crash Course</a></li>
+                <li><a href="#" target="_blank" rel="noopener noreferrer">CodePen: HTML Playground</a></li>
+            </ul>
+            <!-- End of the list. -->
+        </article>
+        <!-- End of article. -->
+
+        <!-- Section 2: Discussion Forum -->
+        <!-- TODO: Create a 'section' for the discussion, with an 'id' of "discussion-forum". -->
+        <section id="discussion-forum">
+            <!-- TODO: Add a sub-heading ('h2') "Discussion". -->
+            <h2>Discussion</h2>
+            
+            <!-- TODO: Add a 'p' with instructions -->
+            <p class="discussion-instructions">Ask questions, share resources, or discuss this week's topics with classmates and instructors.</p>
+
+            <!-- Subsection 2.1: Existing Comments -->
+            <!-- TODO: Add a container (like a 'div') for the list of comments. -->
+            <div id="comment-list" class="comments-list">
+                <!-- TODO: Add 1-2 dummy comments to show the structure. -->
+
+                <!-- Example Comment 1: -->
+                <!-- TODO: Use an 'article' for each comment. -->
+                <article class="comment">
+                    <!-- TODO: Use a 'p' for the comment text (e.g., "I have a question about the 'header' tag."). -->
+                    <p class="comment-text">I have a question about the semantic structure. Should we always use &lt;header&gt; at the top of our pages, or are there exceptions?</p>
+                    
+                    <!-- TODO: Use a 'footer' to show the author (e.g., "Posted by: John Doe"). -->
+                    <footer class="comment-meta">
+                        <span>Posted by: <strong>Sarah Johnson</strong></span>
+                        <span>on 2024-01-10</span>
+                    </footer>
+                </article>
+                <!-- End of comment article. -->
+
+                <!-- Example Comment 2: -->
+                <article class="comment">
+                    <p class="comment-text">Great question Sarah! The &lt;header&gt; element should be used for introductory content or navigational links. You can have multiple headers in a document, for example, one for the page and one for each &lt;article&gt; or &lt;section&gt;.</p>
+                    <footer class="comment-meta">
+                        <span>Posted by: <strong>Prof. Ahmed (Instructor)</strong></span>
+                        <span>on 2024-01-10</span>
+                    </footer>
+                </article>
+
+                <!-- Example Comment 3: -->
+                <article class="comment">
+                    <p class="comment-text">Can someone share examples of good semantic HTML structure for a blog post? I'm working on the assignment and want to make sure I'm using the right tags.</p>
+                    <footer class="comment-meta">
+                        <span>Posted by: <strong>Mohammed Ali</strong></span>
+                        <span>on 2024-01-11</span>
+                    </footer>
+                </article>
+            </div>
+
+            <!-- Subsection 2.2: Add a Comment Form -->
+            <!-- TODO: Create a 'form' for users to post new comments. Action can be '#'. -->
+            <form id="comment-form" action="#">
+                <!-- TODO: Use a 'fieldset' to group the controls. -->
+                <fieldset>
+                    <!-- TODO: Add a 'legend', e.g., "Ask a Question". -->
+                    <legend>Join the Discussion</legend>
+
+                    <!-- TODO: Add a 'label' and 'textarea' for the comment box.
+                         - label 'for': "new-comment"
+                         - textarea 'id': "new-comment", required -->
+                    <label for="new-comment-text">Your Comment or Question:</label>
+                    <textarea id="new-comment-text" rows="5" required placeholder="Share your thoughts..."></textarea>
+                    <!-- TODO: Add a 'button' to submit the comment.
+                         - type="submit", Text: "Post Comment" -->
+                    <button type="submit" class="btn">Post Comment</button>
+                </fieldset>
+                <!-- End of fieldset. -->
+            </form>
+            <!-- End of form. -->
+            
+            <!-- Back to list link -->
+            <div class="back-link">
+                <a href="list.html" class="btn">← Back to Weekly Breakdown</a>
+            </div>
+        </section>
+        <!-- End of discussion section. -->
+    </main>
+    <!-- End of main. -->
+
+    <!-- Link to JavaScript file for dynamic loading of week details -->
+    <script src="details.js" defer></script>
+</body>
+</html>
+
