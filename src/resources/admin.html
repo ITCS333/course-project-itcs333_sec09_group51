@@ -6,7 +6,7 @@
   This page allows the teacher (admin) to perform full CRUD operations on course resources.
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  >
 <head>
     <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
     <meta charset="UTF-8">
@@ -20,6 +20,39 @@
     <!-- TODO: Link to your CSS framework or stylesheet. -->
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
     <script src="admin.js" defer></script>
+
+    <style>
+        section {
+            margin: 20px;
+            padding: 20px;
+        } 
+
+         form fieldset {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        form legend {
+            font-weight: bold;
+            padding: 10px;
+        }   
+
+        form label {
+            display: block;
+            font-weight: bold;
+        }   
+
+        h1, h2 {
+            text-align: center; }
+
+        #deletebtn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+        }
+        
+    </style>
 
 </head>
 <body>
@@ -99,7 +132,7 @@
                             <!-- TODO: Add a "Delete" button. -->
                              <td>
                                 <button>Edit</button>
-                                <button>Delete</button>
+                                <button id="deletebtn">Delete</button>
                             </td>
                         <!-- End of actions 'td'. -->
                     <!-- End of the row. -->
@@ -113,7 +146,7 @@
                             <td>This is a web link</td>
                                  <td>
                                 <button>Edit</button>
-                                <button>Delete</button>
+                                <button id="deletebtn">Delete</button>
                             </td>
                          </tr>
                     <!-- End of the row. -->

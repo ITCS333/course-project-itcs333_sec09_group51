@@ -5,7 +5,7 @@
   This page displays the details for one resource and allows for discussion.
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
     <!-- TODO: Add meta tags for charset and viewport. -->
     <meta charset="UTF-8" >
@@ -15,6 +15,33 @@
     <!-- TODO: Link to your CSS framework or stylesheet. -->
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
     <script src="details.js" defer></script>
+
+    <style>
+        section {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        form fieldset {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        form legend {
+            font-weight: bold;
+            padding: 10px;
+        }   
+
+        form label {
+            display: block;
+            font-weight: bold;
+        }  
+
+        h1, h2 {
+            text-align: center; }
+    </style>
+
 </head>
 <body>
     <!-- TODO: Create a 'header' with a main heading ('h1'). You can use a dummy title like "Chapter 1 Notes". -->
@@ -69,6 +96,7 @@
                     <!-- TODO: Add a 'label' and 'textarea' for the comment box.
                          - label 'for': "new-comment"
                          - textarea 'id': "new-comment", required -->
+                    <legend>Leave a Comment</legend>
                     <label for="new-comment">New Comment</label> <br>
                     <textarea id="new-comment" required placeholder="Please enter your comment here"></textarea> <br>
                     <!-- TODO: Add a 'button' to submit the comment.
