@@ -603,7 +603,7 @@ function deleteComment($db, $commentId) {
     } else {
         sendResponse(false, 'Failed to delete comment', [], 500);
     }
-    
+
 }
 
 
@@ -647,7 +647,7 @@ try {
         // If action is 'comment', create a new comment
         // TODO: Check if action === 'comment'
         // Call createComment()
-        if($action === 'comments')
+        if($action === 'comment')
             createComment($db, $inputData);
         else
             createResource($db, $inputData);
@@ -739,7 +739,7 @@ function sendResponse($data, $statusCode = 200) {
 function validateUrl($url) {
     // TODO: Use filter_var with FILTER_VALIDATE_URL
     // Return true if valid, false otherwise
-    return (filter_var($url , FILTER_VALIDATE_URL ));
+    return filter_var($url, FILTER_VALIDATE_URL) !== false;    
 }
 
 

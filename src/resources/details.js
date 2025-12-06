@@ -159,7 +159,7 @@ async function initializePage() {
     const resources = await resourcesResponse.json();
     const commentsData = await commentsResponse.json();
     
-    const resource = resources.find(r => r.id == currentResourceId);
+    const resource = resources.find(r => r.id === currentResourceId);
     
     if (!resource) {
       resourceTitle.textContent = "Resource not found.";
