@@ -1,12 +1,5 @@
 <?php
-/**
- * Assignment Management API
- * Full CRUD for assignments and comments using PDO + MySQL
- */
 
-// ========================
-// HEADERS AND CORS
-// ========================
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -18,9 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// ========================
-// DATABASE CONNECTION
-// ========================
+
 $host = "localhost";
 $dbname = "assignment_db";
 $user = "root";
@@ -35,16 +26,12 @@ try {
     exit();
 }
 
-// ========================
-// REQUEST PARSING
-// ========================
+
 $method = $_SERVER['REQUEST_METHOD'];
 $data = json_decode(file_get_contents("php://input"), true);
 $resource = isset($_GET['resource']) ? $_GET['resource'] : '';
 
-// ========================
-// HELPER FUNCTIONS
-// ========================
+
 function sendResponse($data, $statusCode = 200) {
     http_response_code($statusCode);
     echo json_encode($data);
@@ -60,9 +47,7 @@ function validateDate($date) {
     return $d && $d->format("Y-m-d") === $date;
 }
 
-// ========================
-// ASSIGNMENTS FUNCTIONS
-// ========================
+
 
 function getAllAssignments($db) {
     $stmt = $db->prepare("SELECT * FROM assignments ORDER BY due_date ASC");
@@ -164,9 +149,7 @@ function deleteAssignment($db,$id) {
     sendResponse(["success"=>"Assignment deleted"]);
 }
 
-// ========================
-// COMMENTS FUNCTIONS
-// ========================
+
 
 function getCommentsByAssignment($db, $assignment_id) {
     $stmt = $db->prepare("SELECT * FROM comments WHERE assignment_id=:assignment_id ORDER BY created_at ASC");
@@ -218,9 +201,7 @@ function deleteComment($db,$id){
     sendResponse(["success"=>"Comment deleted"]);
 }
 
-// ========================
-// ROUTING
-// ========================
+
 try {
     if($method==="GET"){
         if($resource==="assignments"){
