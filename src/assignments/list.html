@@ -1,20 +1,17 @@
-<!--
-  Requirement: Create the Student View for Assignments
-  Read-only page for students to see all course assignments.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Meta tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- CSS framework -->
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
-
 
     <!-- Page title -->
     <title>Course Assignments</title>
 
-    <!-- Simple styling (optional) -->
+    <!-- Optional styling -->
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,7 +44,6 @@
 </head>
 
 <body>
-
     <!-- Header -->
     <header>
         <h1>Course Assignments</h1>
@@ -55,16 +51,16 @@
 
     <!-- Main content -->
     <main>
-
         <!-- Section: List of Assignments -->
-        <section>
+        <section id="assignments-list">
 
             <!-- Assignment 1 -->
             <article>
                 <h2>Assignment 1: HTML Basics</h2>
                 <p><strong>Due:</strong> 2025-12-05</p>
                 <p>This assignment covers creating basic HTML pages using headings, lists, and links.</p>
-                <a href="assignment-detail.html">View Details & Discussion</a>
+                <!-- Add dynamic ID for JS -->
+                <a href="details.html?id=asg_1">View Details & Discussion</a>
             </article>
 
             <!-- Assignment 2 -->
@@ -72,7 +68,7 @@
                 <h2>Assignment 2: JavaScript Intro</h2>
                 <p><strong>Due:</strong> 2025-12-10</p>
                 <p>A simple introduction to JavaScript variables, events, and functions.</p>
-                <a href="assignment-detail.html">View Details & Discussion</a>
+                <a href="details.html?id=asg_2">View Details & Discussion</a>
             </article>
 
             <!-- Assignment 3 -->
@@ -80,12 +76,10 @@
                 <h2>Assignment 3: CSS Styling</h2>
                 <p><strong>Due:</strong> 2025-12-15</p>
                 <p>Learn how to style webpages using selectors, colors, spacing, and layouts.</p>
-                <a href="assignment-detail.html">View Details & Discussion</a>
+                <a href="details.html?id=asg_3">View Details & Discussion</a>
             </article>
 
         </section>
-
     </main>
-
 </body>
 </html>
