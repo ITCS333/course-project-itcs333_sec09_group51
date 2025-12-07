@@ -1,85 +1,136 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- TODO: Add meta tags for charset and viewport. -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- TODO: Add a title, for now use "Assignment Details". -->
-    <title>Assignment Details</title>
+let currentAssignmentId = null;
+let currentComments = [];
 
-    <!-- TODO: Link to your CSS framework or stylesheet. -->
-   <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
- <!-- dummy link -->
- <style>
-        body { margin: 20px; }
-        article { margin-bottom: 30px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; }
-        .comment { border-top: 1px solid #ddd; padding: 10px 0; }
-        form { margin-top: 20px; }
- </style>
-</head>
-<body>
-    <!-- TODO: Create a 'header' with a main heading ('h1'). Use a dummy title like "Assignment 1: HTML Basics". -->
-    <header>
-        <h1 id="assignment-title">Assignment Details</h1>
-    </header>
+// --- Element Selections ---
+const assignmentTitle = document.querySelector("#assignment-title");
+const assignmentDueDate = document.querySelector("#assignment-due-date");
+const assignmentDescription = document.querySelector("#assignment-description");
+const assignmentFilesList = document.querySelector("#assignment-files-list");
 
-    <!-- TODO: Create the 'main' content area. -->
-    <main>
+const commentList = document.querySelector("#comment-list");
+const commentForm = document.querySelector("#comment-form");
+const newCommentText = document.querySelector("#new-comment-text");
 
-        <!-- Section 1: Assignment Information -->
-        <!-- TODO: Use an 'article' to display the main assignment information. -->
-        <article>
-            <!-- TODO: Add a paragraph ('p') to display the due date, e.g., "Due: YYYY-MM-DD". -->
-            <p id="assignment-due-date"></p>
+// --- Functions ---
 
-            <!-- TODO: Add a sub-heading ('h2') "Description". -->
-            <h2>Description</h2>
+// 1. Get assignment ID from URL
+function getAssignmentIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id");
+}
 
-            <!-- TODO: Add a paragraph ('p') with dummy text for the assignment's detailed description. -->
-            <p id="assignment-description"></p>
+// 2. Render assignment details
+function renderAssignmentDetails(assignment) {
+  assignmentTitle.textContent = assignment.title;
+  assignmentDueDate.textContent = "Due: " + assignment.dueDate;
+  assignmentDescription.textContent = assignment.description;
 
-            <!-- TODO: Add another sub-heading ('h2') "Attached Files & Links". -->
-            <h2>Attached Files & Links</h2>
+  // Clear previous files
+  assignmentFilesList.innerHTML = "";
 
-            <!-- TODO: Use an unordered list ('ul') to display the links. -->
-            <ul id="assignment-files-list"></ul>
-        </article>
+  // Add each file as <li><a></a></li>
+  assignment.files.forEach(file => {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    a.href = "#"; // dummy link
+    a.textContent = file;
+    li.appendChild(a);
+    assignmentFilesList.appendChild(li);
+  });
+}
 
-        <!-- Section 2: Discussion Forum -->
-        <!-- TODO: Create a 'section' for the discussion, with an 'id' of "discussion-forum". -->
-        <section id="discussion-forum">
+// 3. Create a comment article element
+function createCommentArticle(comment) {
+  const article = document.createElement("article");
+  article.classList.add("comment");
 
-            <!-- TODO: Add a sub-heading ('h2') "Questions & Discussion". -->
-            <h2>Questions & Discussion</h2>
+  const p = document.createElement("p");
+  p.textContent = comment.text;
 
-            <!-- Subsection 2.1: Existing Comments -->
-            <!-- TODO: Add a container (like a 'div') for the list of comments. -->
-            <div id="comment-list"></div>
+  const footer = document.createElement("footer");
+  footer.textContent = "Posted by: " + comment.author;
 
-            <!-- Subsection 2.2: Add a Comment Form -->
-            <!-- TODO: Create a 'form' for users to post new comments. -->
-            <form id="comment-form">
-                <!-- TODO: Use a 'fieldset' to group the controls. -->
-                <fieldset>
-                    <!-- TODO: Add a 'legend'. -->
-                    <legend>Ask a Question</legend>
+  article.appendChild(p);
+  article.appendChild(footer);
 
-                    <!-- TODO: Add a 'label' and 'textarea'. -->
-                    <label for="new-comment-text">Your Comment:</label>
-                    <textarea id="new-comment-text" required></textarea>
+  return article;
+}
 
-                    <!-- TODO: Add a 'button' to submit. -->
-                    <button type="submit">Post Comment</button>
-                </fieldset>
-            </form>
+// 4. Render all comments
+function renderComments() {
+  commentList.innerHTML = ""; // Clear existing comments
+  currentComments.forEach(comment => {
+    const commentArticle = createCommentArticle(comment);
+    commentList.appendChild(commentArticle);
+  });
+}
 
-        </section>
+// 5. Handle adding a new comment
+function handleAddComment(event) {
+  event.preventDefault();
 
-    </main>
+  const text = newCommentText.value.trim();
+  if (!text) return;
 
-    <!-- TODO: Add your details.js script -->
-    <script src="details.js" defer></script>
-</body>
-</html>
+  const newComment = {
+    author: "Student", // hardcoded for demo
+    text: text
+  };
 
+  currentComments.push(newComment);
+  renderComments();
+
+  newCommentText.value = ""; // clear textarea
+}
+
+// 6. Initialize page
+async function initializePage() {
+  currentAssignmentId = getAssignmentIdFromURL();
+
+  if (!currentAssignmentId) {
+    alert("Error: No assignment ID found in URL.");
+    assignmentTitle.textContent = "Error: No assignment ID found.";
+    return;
+  }
+
+  try {
+    // Fetch assignments and comments
+    const [assignmentsRes, commentsRes] = await Promise.all([
+      fetch("assignments.json"),
+      fetch("comments.json")
+    ]);
+
+    if (!assignmentsRes.ok || !commentsRes.ok) {
+      throw new Error("Failed to load JSON data.");
+    }
+
+    const assignments = await assignmentsRes.json();
+    const commentsData = await commentsRes.json();
+
+    // Find current assignment
+    const assignment = assignments.find(a => a.id === currentAssignmentId);
+    currentComments = commentsData[currentAssignmentId] || [];
+
+    if (!assignment) {
+      alert("Error: Assignment not found.");
+      assignmentTitle.textContent = "Error: Assignment not found.";
+      return;
+    }
+
+    // Render assignment and comments
+    renderAssignmentDetails(assignment);
+    renderComments();
+
+    // Attach event listener for new comments
+    commentForm.addEventListener("submit", handleAddComment);
+
+  } catch (error) {
+    console.error("Error loading data:", error);
+    alert("Error loading assignment data. Check console for details.");
+    assignmentTitle.textContent = "Error loading assignment.";
+  }
+}
+
+// --- Initial Page Load ---
+initializePage();
