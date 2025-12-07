@@ -1,8 +1,6 @@
-
 let currentAssignmentId = null;
 let currentComments = [];
 
-// --- Element Selections ---
 const assignmentTitle = document.querySelector("#assignment-title");
 const assignmentDueDate = document.querySelector("#assignment-due-date");
 const assignmentDescription = document.querySelector("#assignment-description");
@@ -12,35 +10,28 @@ const commentList = document.querySelector("#comment-list");
 const commentForm = document.querySelector("#comment-form");
 const newCommentText = document.querySelector("#new-comment-text");
 
-// --- Functions ---
-
-// 1. Get assignment ID from URL
 function getAssignmentIdFromURL() {
   const params = new URLSearchParams(window.location.search);
   return params.get("id");
 }
 
-// 2. Render assignment details
 function renderAssignmentDetails(assignment) {
   assignmentTitle.textContent = assignment.title;
   assignmentDueDate.textContent = "Due: " + assignment.dueDate;
   assignmentDescription.textContent = assignment.description;
 
-  // Clear previous files
   assignmentFilesList.innerHTML = "";
 
-  // Add each file as <li><a></a></li>
   assignment.files.forEach(file => {
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.href = "#"; // dummy link
+    a.href = "#";
     a.textContent = file;
     li.appendChild(a);
     assignmentFilesList.appendChild(li);
   });
 }
 
-// 3. Create a comment article element
 function createCommentArticle(comment) {
   const article = document.createElement("article");
   article.classList.add("comment");
@@ -57,16 +48,14 @@ function createCommentArticle(comment) {
   return article;
 }
 
-// 4. Render all comments
 function renderComments() {
-  commentList.innerHTML = ""; // Clear existing comments
+  commentList.innerHTML = "";
   currentComments.forEach(comment => {
     const commentArticle = createCommentArticle(comment);
     commentList.appendChild(commentArticle);
   });
 }
 
-// 5. Handle adding a new comment
 function handleAddComment(event) {
   event.preventDefault();
 
@@ -74,17 +63,16 @@ function handleAddComment(event) {
   if (!text) return;
 
   const newComment = {
-    author: "Student", // hardcoded for demo
+    author: "Student",
     text: text
   };
 
   currentComments.push(newComment);
   renderComments();
 
-  newCommentText.value = ""; // clear textarea
+  newCommentText.value = "";
 }
 
-// 6. Initialize page
 async function initializePage() {
   currentAssignmentId = getAssignmentIdFromURL();
 
@@ -95,7 +83,6 @@ async function initializePage() {
   }
 
   try {
-    // Fetch assignments and comments
     const [assignmentsRes, commentsRes] = await Promise.all([
       fetch("assignments.json"),
       fetch("comments.json")
@@ -108,7 +95,6 @@ async function initializePage() {
     const assignments = await assignmentsRes.json();
     const commentsData = await commentsRes.json();
 
-    // Find current assignment
     const assignment = assignments.find(a => a.id === currentAssignmentId);
     currentComments = commentsData[currentAssignmentId] || [];
 
@@ -118,11 +104,9 @@ async function initializePage() {
       return;
     }
 
-    // Render assignment and comments
     renderAssignmentDetails(assignment);
     renderComments();
 
-    // Attach event listener for new comments
     commentForm.addEventListener("submit", handleAddComment);
 
   } catch (error) {
@@ -132,5 +116,4 @@ async function initializePage() {
   }
 }
 
-// --- Initial Page Load ---
 initializePage();
