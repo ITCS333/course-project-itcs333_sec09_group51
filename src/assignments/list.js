@@ -1,12 +1,6 @@
 // --- Element Selections ---
 const listSection = document.querySelector("#assignment-list-section");
 
-// --- Functions ---
-
-/**
- * Creates an <article> element for one assignment
- * assignment = { id, title, dueDate, description }
- */
 function createAssignmentArticle(assignment) {
   // Create elements
   const article = document.createElement("article");
@@ -33,9 +27,7 @@ function createAssignmentArticle(assignment) {
   return article;
 }
 
-/**
- * Loads assignments from assignments.json and displays them
- */
+
 async function loadAssignments() {
   try {
     // 1. Fetch data
