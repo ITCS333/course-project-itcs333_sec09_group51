@@ -15,7 +15,7 @@ function createAssignmentArticle(assignment) {
   title.textContent = assignment.title;
 
   const due = document.createElement("p");
-  due.textContent = `Due: ${assignment.dueDate}`;
+  due.innerHTML = `<strong>Due:</strong> ${assignment.dueDate}`;
 
   const desc = document.createElement("p");
   desc.textContent = assignment.description;
@@ -41,6 +41,8 @@ async function loadAssignments() {
     // 1. Fetch data
     const response = await fetch("assignments.json");
 
+    if (!response.ok) throw new Error("Failed to load assignments.json");
+
     // 2. Parse JSON
     const assignments = await response.json();
 
@@ -55,6 +57,7 @@ async function loadAssignments() {
 
   } catch (error) {
     console.error("Error loading assignments:", error);
+    listSection.innerHTML = `<p style="color:red;">Error loading assignments. Please try again later.</p>`;
   }
 }
 
