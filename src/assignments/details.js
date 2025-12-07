@@ -1,5 +1,5 @@
 /*
-  Requirement: Populate the assignment detail page and discussion forum.
+  details.js - Populate assignment detail page and discussion forum
 */
 
 // --- Global Data Store ---
@@ -7,7 +7,6 @@ let currentAssignmentId = null;
 let currentComments = [];
 
 // --- Element Selections ---
-// Selecting all required elements by ID
 const assignmentTitle = document.querySelector("#assignment-title");
 const assignmentDueDate = document.querySelector("#assignment-due-date");
 const assignmentDescription = document.querySelector("#assignment-description");
@@ -31,21 +30,21 @@ function renderAssignmentDetails(assignment) {
   assignmentDueDate.textContent = "Due: " + assignment.dueDate;
   assignmentDescription.textContent = assignment.description;
 
-  // Clear old files
+  // Clear previous files
   assignmentFilesList.innerHTML = "";
 
   // Add each file as <li><a></a></li>
   assignment.files.forEach(file => {
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.href = "#";
+    a.href = "#"; // dummy link
     a.textContent = file;
     li.appendChild(a);
     assignmentFilesList.appendChild(li);
   });
 }
 
-// 3. Create a comment article
+// 3. Create a comment article element
 function createCommentArticle(comment) {
   const article = document.createElement("article");
   article.classList.add("comment");
@@ -65,14 +64,13 @@ function createCommentArticle(comment) {
 // 4. Render all comments
 function renderComments() {
   commentList.innerHTML = ""; // Clear existing comments
-
   currentComments.forEach(comment => {
     const commentArticle = createCommentArticle(comment);
     commentList.appendChild(commentArticle);
   });
 }
 
-// 5. Add a new comment
+// 5. Handle adding a new comment
 function handleAddComment(event) {
   event.preventDefault();
 
@@ -80,14 +78,14 @@ function handleAddComment(event) {
   if (!text) return;
 
   const newComment = {
-    author: "Student",
-    text: text,
+    author: "Student", // hardcoded for demo
+    text: text
   };
 
   currentComments.push(newComment);
-
   renderComments();
-  newCommentText.value = "";
+
+  newCommentText.value = ""; // clear textarea
 }
 
 // 6. Initialize page
@@ -95,37 +93,49 @@ async function initializePage() {
   currentAssignmentId = getAssignmentIdFromURL();
 
   if (!currentAssignmentId) {
+    alert("Error: No assignment ID found in URL.");
     assignmentTitle.textContent = "Error: No assignment ID found.";
     return;
   }
 
   try {
+    // Fetch assignments and comments
     const [assignmentsRes, commentsRes] = await Promise.all([
       fetch("assignments.json"),
-      fetch("comments.json"),
+      fetch("comments.json")
     ]);
+
+    if (!assignmentsRes.ok || !commentsRes.ok) {
+      throw new Error("Failed to load JSON data.");
+    }
 
     const assignments = await assignmentsRes.json();
     const commentsData = await commentsRes.json();
 
+    // Find current assignment
     const assignment = assignments.find(a => a.id === currentAssignmentId);
     currentComments = commentsData[currentAssignmentId] || [];
 
     if (!assignment) {
+      alert("Error: Assignment not found.");
       assignmentTitle.textContent = "Error: Assignment not found.";
       return;
     }
 
+    // Render assignment and comments
     renderAssignmentDetails(assignment);
     renderComments();
 
+    // Attach event listener for new comments
     commentForm.addEventListener("submit", handleAddComment);
 
   } catch (error) {
     console.error("Error loading data:", error);
+    alert("Error loading assignment data. Check console for details.");
     assignmentTitle.textContent = "Error loading assignment.";
   }
 }
 
 // --- Initial Page Load ---
 initializePage();
+
