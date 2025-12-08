@@ -1,85 +1,68 @@
+ <!-- src/assignments/list.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- CSS framework -->
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
-
-    <!-- Page title -->
+<!-- Meta tags -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
     <title>Course Assignments</title>
-
-    <!-- Optional styling -->
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        header h1 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        section article {
-            border: 1px solid #ccc;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            background: #fafafa;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 10px;
-            color: #007bff;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+ 
+    <!--      styles.css  -->
+<link rel="stylesheet" href="../common/styles.css">
+ 
+    <!-- JS for dynamic loading from assignments.json (if you use it) -->
+<script src="list.js" defer></script>
 </head>
-
 <body>
-    <!-- Header -->
-    <header>
-        <h1>Course Assignments</h1>
-    </header>
+<div class="page-wrapper">
+<!-- Header -->
+<header>
+<h1>Course Assignments</h1>
+<p class="text-muted">
 
-    <!-- Main content -->
-    <main>
-        <!-- Section: List of Assignments -->
-        <section id="assignments-list">
+                All assignments for ITCS333 – Course Page Project.
+</p>
+</header>
+ 
+        <!-- Main content -->
+<main class="container">
+ 
+            <!-- List of assignments (styled by styles.css) -->
+<section id="assignment-list-section" class="assignment-list">
+<!-- Fallback dummy cards (in case JS doesn't load) -->
+<article class="assignment-card">
+<h3>Assignment 1: HTML Basics</h3>
+<p class="assignment-meta">Due: 2025-11-10</p>
+<p>
 
-            <!-- Assignment 1 -->
-            <article>
-                <h2>Assignment 1: HTML Basics</h2>
-                <p><strong>Due:</strong> 2025-12-05</p>
-                <p>This assignment covers creating basic HTML pages using headings, lists, and links.</p>
-                <!-- Add dynamic ID for JS -->
-                <a href="details.html?id=asg_1">View Details & Discussion</a>
-            </article>
+                        Create a semantic HTML structure for a personal portfolio
 
-            <!-- Assignment 2 -->
-            <article>
-                <h2>Assignment 2: JavaScript Intro</h2>
-                <p><strong>Due:</strong> 2025-12-10</p>
-                <p>A simple introduction to JavaScript variables, events, and functions.</p>
-                <a href="details.html?id=asg_2">View Details & Discussion</a>
-            </article>
+                        using &lt;header&gt;, &lt;nav&gt;, &lt;main&gt;, &lt;article&gt; and &lt;footer&gt;.
+</p>
+<p class="assignment-actions">
+<a href="details.html?id=asg_1">View Details &amp; Discussion</a>
+</p>
+</article>
+ 
+                <article class="assignment-card">
+<h3>Assignment 2: CSS Styling</h3>
+<p class="assignment-meta">Due: 2025-11-17</p>
+<p>
 
-            <!-- Assignment 3 -->
-            <article>
-                <h2>Assignment 3: CSS Styling</h2>
-                <p><strong>Due:</strong> 2025-12-15</p>
-                <p>Learn how to style webpages using selectors, colors, spacing, and layouts.</p>
-                <a href="details.html?id=asg_3">View Details & Discussion</a>
-            </article>
-
-        </section>
-    </main>
+     Style your portfolio using Flexbox or Grid and include at least one CSS animation.
+</p>
+<p class="assignment-actions">
+<a href="details.html?id=asg_2">View Details &amp; Discussion</a>
+</p>
+</article>
+ 
+            </section>
+ 
+        </main>
+</div>
 </body>
 </html>
+
+ 
+ 
