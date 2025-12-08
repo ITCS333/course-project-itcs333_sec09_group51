@@ -1,135 +1,249 @@
 let assignments = [];
 
-const assignmentForm = document.querySelector('#assignment-form');
-const assignmentsTableBody = document.querySelector('#assignments-tbody');
+let editingAssignmentId = null;
+ 
 
+const assignmentForm = document.getElementById("assignment-form");
+
+const assignmentsTableBody = document.getElementById("assignments-tbody");
+
+const titleInput = document.getElementById("assignment-title");
+
+const descInput = document.getElementById("assignment-description");
+
+const dueDateInput = document.getElementById("assignment-due-date");
+
+const filesInput = document.getElementById("assignment-files");
+
+const submitBtn = document.getElementById("add-assignment");
+ 
+// Create row for one assignment
 
 function createAssignmentRow(assignment) {
-    const tr = document.createElement('tr');
 
-  
-    const tdTitle = document.createElement('td');
-    tdTitle.textContent = assignment.title;
-    tr.appendChild(tdTitle);
+  const tr = document.createElement("tr");
+ 
+  const titleTd = document.createElement("td");
 
-   
-    const tdDue = document.createElement('td');
-    tdDue.textContent = assignment.dueDate;
-    tr.appendChild(tdDue);
+  titleTd.textContent = assignment.title;
+ 
+  const dueTd = document.createElement("td");
 
-   
-    const tdActions = document.createElement('td');
+  dueTd.textContent = assignment.dueDate;
+ 
+  const actionsTd = document.createElement("td");
+ 
+  const editBtn = document.createElement("button");
 
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'Edit';
-    editBtn.classList.add('edit-btn');
-    editBtn.dataset.id = assignment.id;
+  editBtn.textContent = "Edit";
 
-    const deleteBtn = document.createElement('button');
-    deleteBtn.textContent = 'Delete';
-    deleteBtn.classList.add('delete-btn');
-    deleteBtn.dataset.id = assignment.id;
+  editBtn.classList.add("edit-btn");
 
-    tdActions.appendChild(editBtn);
-    tdActions.appendChild(deleteBtn);
-    tr.appendChild(tdActions);
+  editBtn.dataset.id = assignment.id;
+ 
+  const deleteBtn = document.createElement("button");
 
-    return tr;
+  deleteBtn.textContent = "Delete";
+
+  deleteBtn.classList.add("delete-btn");
+
+  deleteBtn.dataset.id = assignment.id;
+ 
+  actionsTd.appendChild(editBtn);
+
+  actionsTd.appendChild(deleteBtn);
+ 
+  tr.appendChild(titleTd);
+
+  tr.appendChild(dueTd);
+
+  tr.appendChild(actionsTd);
+ 
+  return tr;
+
 }
+ 
+// Render whole table
 
-// Render the table with current assignments
 function renderTable() {
-    // Clear table body
-    assignmentsTableBody.innerHTML = '';
 
-    // Loop through assignments and append rows
-    assignments.forEach(assignment => {
-        const row = createAssignmentRow(assignment);
-        assignmentsTableBody.appendChild(row);
-    });
+  assignmentsTableBody.innerHTML = "";
+
+  assignments.forEach((assignment) => {
+
+    const row = createAssignmentRow(assignment);
+
+    assignmentsTableBody.appendChild(row);
+
+  });
+
 }
+ 
+// Handle Add/Edit form submit
 
-// Handle adding a new assignment
 function handleAddAssignment(event) {
-    event.preventDefault();
 
-    // Get input values
-    const title = document.querySelector('#assignment-title').value.trim();
-    const description = document.querySelector('#assignment-description').value.trim();
-    const dueDate = document.querySelector('#assignment-due-date').value;
-    const files = document.querySelector('#assignment-files').value.trim();
+  event.preventDefault();
+ 
+  const title = titleInput.value.trim();
 
-    if (!title || !dueDate) {
-        alert('Please fill in the required fields.');
-        return;
-    }
+  const description = descInput.value.trim();
 
-    // Create new assignment object
+  const dueDate = dueDateInput.value;
+
+  const filesRaw = filesInput.value.trim();
+ 
+  if (!title || !description || !dueDate) {
+
+    alert("Please fill in title, description, and due date.");
+
+    return;
+
+  }
+ 
+
+  const files = filesRaw
+
+    ? filesRaw.split("\n").map((line) => line.trim()).filter((line) => line !== "")
+
+    : [];
+ 
+  if (editingAssignmentId === null) {
+
+    // ADD MODE
+
     const newAssignment = {
-        id: `asg_${Date.now()}`,
-        title,
-        description,
-        dueDate,
-        files
+
+      id: `asg_${Date.now()}`,
+
+      title,
+
+      description,
+
+      dueDate,
+
+      files,
+
     };
 
-    // Add to global array
     assignments.push(newAssignment);
 
-    // Refresh table
+  } else {
+
+    // EDIT MODE
+
+    const index = assignments.findIndex((a) => a.id === editingAssignmentId);
+
+    if (index !== -1) {
+
+      assignments[index].title = title;
+
+      assignments[index].description = description;
+
+      assignments[index].dueDate = dueDate;
+
+      assignments[index].files = files;
+
+    }
+
+    editingAssignmentId = null;
+
+    submitBtn.textContent = "Add Assignment";
+
+  }
+ 
+  renderTable();
+
+  assignmentForm.reset();
+
+}
+ 
+// Handle clicks in table (Edit / Delete)
+
+function handleTableClick(event) {
+
+  const target = event.target;
+ 
+  if (target.classList.contains("delete-btn")) {
+
+    const id = target.dataset.id;
+
+    assignments = assignments.filter((a) => a.id !== id);
+
     renderTable();
 
-    // Reset form
-    assignmentForm.reset();
+  }
+ 
+  if (target.classList.contains("edit-btn")) {
+
+    const id = target.dataset.id;
+
+    const assignment = assignments.find((a) => a.id === id);
+
+    if (!assignment) return;
+ 
+    // Fill form with current values
+
+    titleInput.value = assignment.title;
+
+    descInput.value = assignment.description;
+
+    dueDateInput.value = assignment.dueDate;
+
+    filesInput.value = (assignment.files || []).join("\n");
+ 
+    editingAssignmentId = id;
+
+    submitBtn.textContent = "Save Changes";
+ 
+    assignmentForm.scrollIntoView({ behavior: "smooth" });
+
+  }
+
 }
+ 
+// Load assignments from JSON and initialize
 
-// Handle Edit/Delete clicks using delegation
-function handleTableClick(event) {
-    const target = event.target;
-
-    // Delete button clicked
-    if (target.classList.contains('delete-btn')) {
-        const id = target.dataset.id;
-        assignments = assignments.filter(a => a.id !== id);
-        renderTable();
-    }
-
-    // Edit button clicked (simple example: fill form with data)
-    if (target.classList.contains('edit-btn')) {
-        const id = target.dataset.id;
-        const assignment = assignments.find(a => a.id === id);
-        if (assignment) {
-            document.querySelector('#assignment-title').value = assignment.title;
-            document.querySelector('#assignment-description').value = assignment.description;
-            document.querySelector('#assignment-due-date').value = assignment.dueDate;
-            document.querySelector('#assignment-files').value = assignment.files;
-
-            // Optional: remove the old assignment so submitting updates it
-            assignments = assignments.filter(a => a.id !== id);
-        }
-    }
-}
-
-// Load assignments from JSON and initialize page
 async function loadAndInitialize() {
-    try {
-        const response = await fetch('assignments.json');
-        if (!response.ok) throw new Error('Failed to load assignments.json');
-        const data = await response.json();
-        assignments = data;
 
-        renderTable();
+  try {
 
-        
-        assignmentForm.addEventListener('submit', handleAddAssignment);
-        assignmentsTableBody.addEventListener('click', handleTableClick);
-    } catch (error) {
-        console.error('Error loading assignments:', error);
-        // Still attach event listeners even if fetch fails
-        assignmentForm.addEventListener('submit', handleAddAssignment);
-        assignmentsTableBody.addEventListener('click', handleTableClick);
+    const response = await fetch("assignments.json");
+
+    if (response.ok) {
+
+      assignments = await response.json();
+
+    } else {
+
+      assignments = [];
+
     }
+
+  } catch (error) {
+
+    console.error("Failed to load assignments.json:", error);
+
+    assignments = [];
+
+  }
+ 
+  renderTable();
+ 
+  if (assignmentForm) {
+
+    assignmentForm.addEventListener("submit", handleAddAssignment);
+
+  }
+ 
+  if (assignmentsTableBody) {
+
+    assignmentsTableBody.addEventListener("click", handleTableClick);
+
+  }
+
 }
-
-
+ 
 loadAndInitialize();
+
+ 
