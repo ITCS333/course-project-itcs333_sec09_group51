@@ -56,7 +56,7 @@ header('Content-Type: application/json');
 // Allow cross-origin requests (CORS) if needed
 header('Access-Control-Allow-Origin: *');
 // Allow specific HTTP methods (GET, POST, PUT, DELETE, OPTIONS)
-header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 // Allow specific headers (Content-Type, Authorization)
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
@@ -153,7 +153,7 @@ function getAllResources($db) {
     // TODO: If search parameter was used, bind the search parameter
     // Use % wildcards for LIKE search
     if (!empty($search)) 
-            $stmt->bindValue(':search', '%$search%', PDO::PARAM_STR);
+            $stmt->bindValue(':search', "%{$search}%", PDO::PARAM_STR);
     // TODO: Execute the query
     $stmt->execute();
 
@@ -473,7 +473,8 @@ function getCommentsByResourceId($db, $resourceId) {
     // TODO: Validate that resource_id is provided and is numeric
     // If not, return error response with 400 status
     if (empty($resourceId) || !is_numeric($resourceId)) {
-        sendResponse(false, 'Invalid or missing resource ID', [], 400);
+        // sendResponse(false, 'Invalid or missing resource ID', [], 400);
+        sendResponse([], 400);
         return ;
     }
     // TODO: Prepare SQL query to select comments for the resource
