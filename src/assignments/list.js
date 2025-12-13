@@ -1,57 +1,59 @@
-// --- Element Selections ---
-const listSection = document.querySelector("#assignment-list-section");
+const listSection = document.getElementById("assignment-list-section");
 
 function createAssignmentArticle(assignment) {
-  // Create elements
+  const { id, title, dueDate, description } = assignment;
+
   const article = document.createElement("article");
 
-  const title = document.createElement("h2");
-  title.textContent = assignment.title;
+  const h2 = document.createElement("h2");
+  h2.textContent = title;
 
-  const due = document.createElement("p");
-  due.innerHTML = `<strong>Due:</strong> ${assignment.dueDate}`;
+  const pDue = document.createElement("p");
+  pDue.textContent = `Due: ${dueDate}`;
 
-  const desc = document.createElement("p");
-  desc.textContent = assignment.description;
+  const pDesc = document.createElement("p");
+  pDesc.textContent = description;
 
   const link = document.createElement("a");
-  link.href = `details.html?id=${assignment.id}`;
+  link.href = `details.html?id=${encodeURIComponent(id)}`;
   link.textContent = "View Details & Discussion";
 
-  // Append elements to article
-  article.appendChild(title);
-  article.appendChild(due);
-  article.appendChild(desc);
-  article.appendChild(link);
-
+  article.append(h2, pDue, pDesc, link);
   return article;
 }
 
-
+// Load assignments from assignments.json
 async function loadAssignments() {
+  if (!listSection) return;
+
+  listSection.textContent = "Loading assignments...";
+
   try {
-    // 1. Fetch data
-    const response = await fetch("assignments.json");
+    // Important: the file is inside the api folder
+    const response = await fetch("api/assignments.json");
 
-    if (!response.ok) throw new Error("Failed to load assignments.json");
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
 
-    // 2. Parse JSON
-    const assignments = await response.json();
+    const data = await response.json(); // This is an array
 
-    // 3. Clear the section
     listSection.innerHTML = "";
 
-    // 4. Loop and create articles
-    assignments.forEach(assignment => {
+    if (!Array.isArray(data) || data.length === 0) {
+      listSection.textContent = "No assignments found.";
+      return;
+    }
+
+    data.forEach((assignment) => {
       const article = createAssignmentArticle(assignment);
       listSection.appendChild(article);
     });
-
   } catch (error) {
     console.error("Error loading assignments:", error);
-    listSection.innerHTML = `<p style="color:red;">Error loading assignments. Please try again later.</p>`;
+    listSection.textContent = "Error loading assignments.";
   }
 }
 
-// --- Initial Page Load ---
+// Run on page load
 loadAssignments();
