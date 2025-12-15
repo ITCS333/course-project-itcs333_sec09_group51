@@ -56,6 +56,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
 }
 
+// ADDED: Start session to store user data
+session_start();
+
+// ADDED: Initialize session variables if not already set
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['user_id'] = 1; // Default user ID
+    $_SESSION['username'] = 'anonymous';
+    $_SESSION['role'] = 'student'; // Default role
+    $_SESSION['last_activity'] = time(); // Track last activity
+}
+
 // TODO: Include the database connection class
 // Assume the Database class has a method getConnection() that returns a PDO instance
 // Example: require_once '../config/Database.php';
@@ -97,6 +108,13 @@ $resource = $_GET['resource'] ?? 'weeks';
  *   - order: Optional sort order (asc or desc, default: asc)
  */
 function getAllWeeks($db) {
+    // ADDED: Use session data to track API usage
+    if (isset($_SESSION['api_calls'])) {
+        $_SESSION['api_calls']++;
+    } else {
+        $_SESSION['api_calls'] = 1;
+    }
+    
     // TODO: Initialize variables for search, sort, and order from query parameters
     $search = $_GET['search'] ?? '';
     $sort = $_GET['sort'] ?? 'start_date';
@@ -215,6 +233,12 @@ function getWeekById($db, $weekId) {
  *   - links: Array of resource links (will be JSON encoded)
  */
 function createWeek($db, $data) {
+    // ADDED: Check user permissions using session
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'instructor') {
+        sendError('Only instructors can create weeks', 403);
+        return;
+    }
+    
     // TODO: Validate required fields
     // Check if week_id, title, start_date, and description are provided
     // If any field is missing, return error response with 400 status
@@ -302,6 +326,12 @@ function createWeek($db, $data) {
  *   - links: Updated array of links (optional)
  */
 function updateWeek($db, $data) {
+    // ADDED: Check user permissions using session
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'instructor') {
+        sendError('Only instructors can update weeks', 403);
+        return;
+    }
+    
     // TODO: Validate that week_id is provided
     // If not, return error response with 400 status
     if (empty($data['week_id'])) {
@@ -403,6 +433,12 @@ function updateWeek($db, $data) {
  *   - week_id: The week identifier
  */
 function deleteWeek($db, $weekId) {
+    // ADDED: Check user permissions using session
+    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'instructor') {
+        sendError('Only instructors can delete weeks', 403);
+        return;
+    }
+    
     // TODO: Validate that week_id is provided
     // If not, return error response with 400 status
     if (empty($weekId)) {
@@ -502,6 +538,9 @@ function getCommentsByWeek($db, $weekId) {
  *   - text: Comment text content
  */
 function createComment($db, $data) {
+    // ADDED: Use session username as default author if not provided
+    $defaultAuthor = $_SESSION['username'] ?? 'anonymous';
+    
     // TODO: Validate required fields
     // Check if week_id, author, and text are provided
     // If any field is missing, return error response with 400 status
@@ -516,7 +555,8 @@ function createComment($db, $data) {
     // TODO: Sanitize input data
     // Trim whitespace from all fields
     $week_id = trim($data['week_id']);
-    $author = isset($data['author']) ? trim($data['author']) : 'Anonymous';
+    // MODIFIED: Use session username as default author
+    $author = isset($data['author']) ? trim($data['author']) : $defaultAuthor;
     $text = trim($data['text']);
     
     // TODO: Validate that text is not empty after trimming
@@ -578,6 +618,26 @@ function createComment($db, $data) {
  *   - id: The comment ID to delete
  */
 function deleteComment($db, $commentId) {
+    // ADDED: Check if user can delete this comment
+    // Users can only delete their own comments or if they're an instructor
+    $checkOwnershipSql = "SELECT author FROM comments WHERE id = ?";
+    $checkOwnershipStmt = $db->prepare($checkOwnershipSql);
+    $checkOwnershipStmt->bindParam(1, $commentId, PDO::PARAM_INT);
+    $checkOwnershipStmt->execute();
+    
+    $comment = $checkOwnershipStmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($comment) {
+        $currentUser = $_SESSION['username'] ?? '';
+        $userRole = $_SESSION['role'] ?? 'student';
+        
+        // Only allow deletion if user is the author OR user is an instructor
+        if ($comment['author'] !== $currentUser && $userRole !== 'instructor') {
+            sendError('You can only delete your own comments', 403);
+            return;
+        }
+    }
+    
     // TODO: Validate that id is provided
     // If not, return error response with 400 status
     if (empty($commentId)) {
@@ -626,6 +686,9 @@ try {
     // Get 'resource' parameter (?resource=weeks or ?resource=comments)
     // If not provided, default to 'weeks'
     $resource = $_GET['resource'] ?? 'weeks';
+    
+    // ADDED: Update last activity timestamp in session
+    $_SESSION['last_activity'] = time();
     
     // Route based on resource type and HTTP method
     
@@ -730,6 +793,15 @@ try {
  * @param int $statusCode - HTTP status code (default: 200)
  */
 function sendResponse($data, $statusCode = 200) {
+    // ADDED: Include user info in response for debugging
+    if (isset($_SESSION['user_id'])) {
+        $data['user_info'] = [
+            'user_id' => $_SESSION['user_id'],
+            'username' => $_SESSION['username'],
+            'role' => $_SESSION['role']
+        ];
+    }
+    
     // TODO: Set HTTP response code
     // Use http_response_code($statusCode)
     http_response_code($statusCode);
@@ -804,6 +876,38 @@ function isValidSortField($field, $allowedFields) {
     // Use in_array()
     // Return true if valid, false otherwise
     return in_array($field, $allowedFields);
+}
+
+/**
+ * ADDED: Helper function to check if user is authenticated
+ * 
+ * @return bool - True if user is authenticated, false otherwise
+ */
+function isAuthenticated() {
+    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+}
+
+/**
+ * ADDED: Helper function to check if user has specific role
+ * 
+ * @param string $role - Role to check for
+ * @return bool - True if user has the role, false otherwise
+ */
+function hasRole($role) {
+    return isset($_SESSION['role']) && $_SESSION['role'] === $role;
+}
+
+/**
+ * ADDED: Helper function to get current user info
+ * 
+ * @return array - Current user information from session
+ */
+function getCurrentUser() {
+    return [
+        'user_id' => $_SESSION['user_id'] ?? null,
+        'username' => $_SESSION['username'] ?? 'anonymous',
+        'role' => $_SESSION['role'] ?? 'student'
+    ];
 }
 
 ?>
