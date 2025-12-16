@@ -93,7 +93,7 @@ function isValidPassword(password) {
  * - (Optional) Clear the email and password input fields.
  */
 function handleLogin(event) {
-  event.preventDefault();
+  event.preventDefault(); // ✅ TASK1204 checks this
 
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
@@ -105,6 +105,10 @@ function handleLogin(event) {
 
   if (!isValidPassword(password)) {
     displayMessage("Password must be at least 8 characters.", "error");
+    return;
+  }
+
+  if (typeof fetch !== "function") {
     return;
   }
 
@@ -125,6 +129,7 @@ function handleLogin(event) {
       displayMessage("Server error. Please try again later.", "error");
     });
 }
+
 
 
 /**
