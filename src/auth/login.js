@@ -94,21 +94,21 @@ function isValidPassword(password) {
  */
 function handleLogin(event) {
   event.preventDefault();
-  const email= emailInput.value.trim();
-  const password= passwordInput.value.trim();
-  if(!isValidEmail(email)){
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+
+  if (!isValidEmail(email)) {
     displayMessage("Invalid email format.", "error");
     return;
   }
-  if(!isValidPassword(password)){
+
+  if (!isValidPassword(password)) {
     displayMessage("Password must be at least 8 characters.", "error");
     return;
   }
-  displayMessage("Login successful!", "success");
-  emailInput.value="";
-  passwordInput.value="";
-}
-fetch("login.php", {
+
+  fetch("login.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username: email, password: password })
@@ -117,18 +117,15 @@ fetch("login.php", {
     .then(data => {
       if (data.message) {
         displayMessage(data.message, "success");
-        emailInput.value = "";
-        passwordInput.value = "";
-        // Optional: redirect based on role
-        // if (data.role === "admin") window.location.href = "admin_portal.php";
       } else {
         displayMessage(data.error || "Login failed.", "error");
       }
     })
-    .catch(err => {
-      console.error("Login error:", err);
+    .catch(() => {
       displayMessage("Server error. Please try again later.", "error");
     });
+}
+
 
 /**
  * TODO: Implement the setupLoginForm function.
