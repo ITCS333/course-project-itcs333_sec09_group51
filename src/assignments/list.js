@@ -30,7 +30,7 @@ async function loadAssignments() {
 
   try {
     // Important: the file is inside the api folder
-    const response = await fetch("api/assignments.json");
+    const response = await fetch("../api/assignments.json");
 
     if (!response.ok) {
       throw new Error(`HTTP error: ${response.status}`);
