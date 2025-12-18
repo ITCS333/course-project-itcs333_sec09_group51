@@ -93,7 +93,7 @@ function isValidPassword(password) {
  * - (Optional) Clear the email and password input fields.
  */
 function handleLogin(event) {
-  event.preventDefault(); // ✅ TASK1204 checks this
+  event.preventDefault(); 
 
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
@@ -112,7 +112,7 @@ function handleLogin(event) {
     return;
   }
 
-  fetch("login.php", {
+  fetch("/src/auth/api/index.php", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username: email, password: password })
