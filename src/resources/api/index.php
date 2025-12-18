@@ -51,6 +51,10 @@
 // ============================================================================
 session_start();
 
+if (!isset($_SESSION['user'])) {
+    $_SESSION['user'] = 'guest';
+}
+
 // TODO: Set headers for JSON response and CORS
 // Set Content-Type to application/json
 header('Content-Type: application/json');
