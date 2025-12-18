@@ -49,6 +49,7 @@
 // ============================================================================
 // HEADERS AND INITIALIZATION
 // ============================================================================
+session_start();
 
 // TODO: Set headers for JSON response and CORS
 // Set Content-Type to application/json
