@@ -1,5 +1,9 @@
 <?php
 session_start();  
+
+$_SESSION['api_accessed'] = true;
+$_SESSION['last_access_time'] = date('Y-m-d H:i:s');
+
 /**
 * Assignment Management API
 *
@@ -250,106 +254,175 @@ function deleteAssignment(PDO $db, $assignmentId)
             'success' => false,
             'message' => 'Assignment ID is required.',
         ], 400);
-    }
-    $stmtComments = $db->prepare("DELETE FROM comments WHERE assignment_id = :id");
+    }$stmtComments = $db->prepare("DELETE FROM comments WHERE assignment_id = :id");
+
     $stmtComments->execute([':id' => $assignmentId]);
  
+    
+
     $stmt = $db->prepare("DELETE FROM assignments WHERE id = :id");
+
     $stmt->execute([':id' => $assignmentId]);
  
     if ($stmt->rowCount() === 0) {
+
         sendResponse([
+
             'success' => false,
+
             'message' => 'Assignment not found or already deleted.',
+
         ], 404);
+
     }
  
     sendResponse([
+
         'success' => true,
+
         'message' => 'Assignment deleted successfully.',
+
     ]);
+
 }
  
+
 function getCommentsByAssignment(PDO $db, $assignmentId)
+
 {
+
     if (!$assignmentId) {
+
         sendResponse([
+
             'success' => false,
+
             'message' => 'assignment_id is required.',
+
         ], 400);
+
     }
  
     $stmt = $db->prepare("
+
         SELECT id, assignment_id, author, text, created_at
+
         FROM comments
+
         WHERE assignment_id = :assignment_id
+
         ORDER BY created_at ASC
+
     ");
+
     $stmt->execute([':assignment_id' => $assignmentId]);
  
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
  
     sendResponse([
+
         'success' => true,
+
         'data'    => $rows,
+
     ]);
+
 }
  
 function createComment(PDO $db, array $data)
+
 {
+
     if (empty($data['assignment_id']) || empty($data['author']) || empty($data['text'])) {
+
         sendResponse([
+
             'success' => false,
+
             'message' => 'assignment_id, author and text are required.',
+
         ], 400);
+
     }
  
     $assignmentId = sanitizeInput($data['assignment_id']);
+
     $author       = sanitizeInput($data['author']);
+
     $text         = sanitizeInput($data['text']);
  
     if ($text === '') {
+
         sendResponse([
+
             'success' => false,
+
             'message' => 'Comment text cannot be empty.',
+
         ], 400);
+
     }
  
+    
+
     $check = $db->prepare("SELECT id FROM assignments WHERE id = :id LIMIT 1");
+
     $check->execute([':id' => $assignmentId]);
+
     if (!$check->fetch()) {
+
         sendResponse([
+
             'success' => false,
+
             'message' => 'Assignment not found for this comment.',
+
         ], 404);
+
     }
  
     $sql = "
+
         INSERT INTO comments (assignment_id, author, text, created_at)
+
         VALUES (:assignment_id, :author, :text, NOW())
+
     ";
  
     $stmt = $db->prepare($sql);
+
     $stmt->execute([
+
         ':assignment_id' => $assignmentId,
+
         ':author'        => $author,
+
         ':text'          => $text,
+
     ]);
  
     $id = $db->lastInsertId();
  
     sendResponse([
+
         'success' => true,
+
         'data'    => [
+
             'id'            => $id,
+
             'assignment_id' => $assignmentId,
+
             'author'        => $author,
+
             'text'          => $text,
+
         ],
+
     ], 201);
+
 }
- 
-function deleteComment(PDO $db, $commentId)
+ function deleteComment(PDO $db, $commentId)
 {
     if (!$commentId) {
         sendResponse([
@@ -387,6 +460,7 @@ try {
     }
  
     if ($method === 'GET') {
+ 
         if ($resource === 'assignments') {
             $id = $_GET['id'] ?? null;
             if ($id) {
@@ -394,27 +468,35 @@ try {
             } else {
                 getAllAssignments($db);
             }
+ 
         } elseif ($resource === 'comments') {
             $assignmentId = $_GET['assignment_id'] ?? null;
             getCommentsByAssignment($db, $assignmentId);
+ 
         } else {
             sendResponse([
                 'success' => false,
                 'message' => 'Invalid resource for GET.',
             ], 400);
         }
+ 
     } elseif ($method === 'POST') {
+ 
         if ($resource === 'assignments') {
             createAssignment($db, $data);
+ 
         } elseif ($resource === 'comments') {
             createComment($db, $data);
+ 
         } else {
             sendResponse([
                 'success' => false,
                 'message' => 'Invalid resource for POST.',
             ], 400);
         }
+ 
     } elseif ($method === 'PUT') {
+ 
         if ($resource === 'assignments') {
             updateAssignment($db, $data);
         } else {
@@ -423,25 +505,31 @@ try {
                 'message' => 'PUT not supported for this resource.',
             ], 405);
         }
+ 
     } elseif ($method === 'DELETE') {
+ 
         if ($resource === 'assignments') {
             $id = $_GET['id'] ?? ($data['id'] ?? null);
             deleteAssignment($db, $id);
+ 
         } elseif ($resource === 'comments') {
             $commentId = $_GET['id'] ?? ($data['id'] ?? null);
             deleteComment($db, $commentId);
+ 
         } else {
             sendResponse([
                 'success' => false,
                 'message' => 'Invalid resource for DELETE.',
             ], 400);
         }
+ 
     } else {
         sendResponse([
             'success' => false,
             'message' => 'Method not allowed.',
         ], 405);
     }
+ 
 } catch (PDOException $e) {
     sendResponse([
         'success' => false,
@@ -452,39 +540,58 @@ try {
         'success' => false,
         'message' => 'Server error: ' . $e->getMessage(),
     ], 500);
-}
- 
-// ============================================================================
+}// ============================================================================
+
 // HELPER FUNCTIONS
+
 // ============================================================================
  
 function sendResponse($data, int $statusCode = 200)
+
 {
+
     http_response_code($statusCode);
  
     if (!is_array($data)) {
+
         $data = ['data' => $data];
+
     }
  
     echo json_encode($data);
+
     exit;
+
 }
  
 function sanitizeInput($data): string
+
 {
+
     $data = trim($data);
+
     $data = strip_tags($data);
+
     $data = htmlspecialchars($data, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
     return $data;
+
 }
  
 function validateDate($date): bool
+
 {
+
     $dt = DateTime::createFromFormat('Y-m-d', $date);
+
     return $dt && $dt->format('Y-m-d') === $date;
+
 }
  
 function validateAllowedValue($value, array $allowedValues): bool
+
 {
+
     return in_array($value, $allowedValues, true);
+
 }
