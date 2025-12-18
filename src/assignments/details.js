@@ -135,8 +135,8 @@ async function initializePage() {
   try {
     // Adjust paths if needed
     const [assignmentsRes, commentsRes] = await Promise.all([
-      fetch("api/assignments.json"),
-      fetch("api/comments.json"),
+      fetch("../api/assignments.json"),
+      fetch("../api/comments.json"),
     ]);
  
     const assignmentsData = await assignmentsRes.json();

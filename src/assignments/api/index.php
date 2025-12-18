@@ -74,6 +74,7 @@ function getAllAssignments(PDO $db)
  
     foreach ($rows as &$row) {
         $row['files'] = $row['files'] ? json_decode($row['files'], true) : [];
+        $row['dueDate'] = $row['due_date'];
     }
  
     sendResponse([
