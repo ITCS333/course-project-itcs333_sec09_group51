@@ -1,6 +1,5 @@
 <?php
-session_start();  // تمت الإضافة هنا
-
+session_start();  
 /**
 * Assignment Management API
 *
