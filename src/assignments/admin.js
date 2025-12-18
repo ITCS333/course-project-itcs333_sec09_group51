@@ -208,7 +208,7 @@ async function loadAndInitialize() {
 
   try {
 
-    const response = await fetch("assignments.json");
+    const response = await fetch("../api/assignments.json");
 
     if (response.ok) {
 
